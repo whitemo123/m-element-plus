@@ -1,4 +1,6 @@
 import type { ProjectManifest } from '@pnpm/types'
+import { Module, buildConfig } from '.'
+import { PKG_PREFIX } from '../constant'
 
 /**
  * 筛选不排除的文件
@@ -37,3 +39,14 @@ export const getPackageDependencies = (
     peerDependencies: Object.keys(peerDependencies),
   }
 }
+
+
+export const pathRewriter = (module: Module) => {
+  const config = buildConfig[module]
+
+  return (id: string) => {
+    id = id.replaceAll(`${PKG_PREFIX}/`, `${config.bundle.path}/`)
+    return id
+  }
+}
+

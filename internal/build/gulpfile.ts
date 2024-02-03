@@ -11,7 +11,12 @@ export default series(
   withTaskName('createOutput', () => mkdir(mepOutput, { recursive: true })),
 
   parallel(
-    runTask('buildModules')
+    // 打包es cjs
+    runTask('buildModules'),
+    // 打包全包
+    runTask('buildFullBundle'),
+    // 打包类型
+    runTask('generateTypesDefinitions')
   )
 )
 

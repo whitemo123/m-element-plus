@@ -6,11 +6,11 @@ import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import esbuild from 'rollup-plugin-esbuild'
 import glob from 'fast-glob'
-import { generateExternal, writeBundles } from '../utils/rollup'
-import { excludeFiles } from '../utils/pkg'
+import { generateExternal, writeBundles } from '../utils'
+import { excludeFiles } from '../utils'
 
 import { pkgRoot, mepRoot } from '../constant'
-import { buildConfigEntries } from '../utils/info'
+import { buildConfigEntries } from '../utils'
 
 import type { OutputOptions } from 'rollup'
 
@@ -27,8 +27,6 @@ export const buildModules = async () => {
   const bundle = await rollup({
     input,
     plugins: [
-      // @ts-ignore
-      vue(),
       // VueMacros({
       //   setupComponent: true,
       //   setupSFC: false,
@@ -39,6 +37,8 @@ export const buildModules = async () => {
       //     vueJsx: vueJsx(),
       //   },
       // }),
+      // @ts-ignore
+      vue(),
       nodeResolve({
         extensions: ['.mjs', '.js', '.json', '.ts'],
       }),
