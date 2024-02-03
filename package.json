@@ -1,0 +1,52 @@
+{
+  "private": true,
+  "packageManager": "pnpm@8.14.1",
+  "workspaces": [
+    "packages/*",
+    "play",
+    "docs"
+  ],
+  "scripts": {
+    "dev": "pnpm -C play dev",
+    "clean": "pnpm run clean:dist",
+    "clean:dist": "rimraf dist",
+    "build": "pnpm run -C internal/build start"
+  },
+  "peerDependencies": {
+    "vue": "^3.2.0"
+  },
+  "engines": {
+    "node": ">= 16"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "vite"
+      ]
+    }
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.13",
+    "@types/gulp": "^4.0.9",
+    "@types/node": "^20.11.16",
+    "@vitejs/plugin-vue-jsx": "^1.3.10",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.7.4",
+    "unplugin-vue-macros": "^0.11.2",
+    "vue": "^3.2.0",
+    "vue-tsc": "^0.38.2",
+    "@m-element-plus/build": "workspace:*"
+  },
+  "dependencies": {
+    "@m-element-plus/components": "workspace:*",
+    "@m-element-plus/constants": "workspace:*",
+    "@m-element-plus/hooks": "workspace:*",
+    "@m-element-plus/utils": "workspace:*",
+    "@types/lodash": "^4.14.182",
+    "@types/lodash-es": "^4.17.6",
+    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
+    "lodash-unified": "^1.0.2",
+    "type-fest": "^4.10.2"
+  }
+}
