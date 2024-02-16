@@ -26,7 +26,7 @@
     }
   },
   "devDependencies": {
-    "@types/fs-extra": "^9.0.13",
+    "@m-element-plus/build": "workspace:*",
     "@types/gulp": "^4.0.9",
     "@types/node": "^20.11.16",
     "@vitejs/plugin-vue-jsx": "^1.3.10",
@@ -34,19 +34,19 @@
     "typescript": "^4.7.4",
     "unplugin-vue-macros": "^0.11.2",
     "vue": "^3.2.0",
-    "vue-tsc": "^0.38.2",
-    "@m-element-plus/build": "workspace:*"
+    "vue-tsc": "^0.38.2"
   },
   "dependencies": {
     "@m-element-plus/components": "workspace:*",
     "@m-element-plus/constants": "workspace:*",
     "@m-element-plus/hooks": "workspace:*",
     "@m-element-plus/utils": "workspace:*",
+    "@types/fs-extra": "^11.0.4",
     "@types/lodash": "^4.14.182",
     "@types/lodash-es": "^4.17.6",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "lodash-unified": "^1.0.2",
-    "type-fest": "^4.10.2"
+    "type-fest": "^2.14.0"
   }
 }
