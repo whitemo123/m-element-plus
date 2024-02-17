@@ -47,7 +47,9 @@ export default series(
     // 打包全包
     runTask('buildFullBundle'),
     // 打包类型
-    runTask('generateTypesDefinitions')
+    runTask('generateTypesDefinitions'),
+    // 打包scss
+    runTask('buildSass')
   ),
 
   // 移动打包文件
