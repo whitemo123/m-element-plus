@@ -2,8 +2,6 @@
 import { ref } from 'vue'
 import { ITableOption, tableProps, tableEmits } from './table'
 
-import "../style/index.scss"
-
 defineOptions({
   name: 'MTable',
 })
@@ -14,7 +12,6 @@ const defaultTableOption = {
   indexWidth: 50,
   // 选择栏宽度
   selectionWidth: 50,
-
   // // 有操作栏
   // menu: true,
   // // 操作栏宽度
@@ -43,14 +40,37 @@ const tableOption = ref<ITableOption>({
   column: []
 })
 
+// 当前表格单选值
+const currentRadio = ref<string>('')
+
 // 导出
 const emits = defineEmits(tableEmits)
 
-// 合并表格配置
-tableOption.value = Object.assign(defaultTableOption, props.option)
+// 如果单选模式需要指定rowKey（默认id）
+if (props.option?.selection && props.option?.selection === 'radio') {
+  // 合并表格配置
+  tableOption.value = Object.assign(defaultTableOption, {rowKey: 'id'}, props.option)
+} else {
+  // 合并表格配置
+  tableOption.value = Object.assign(defaultTableOption, props.option)
+}
 
-// 当前表格单选值
-const currentRadio = ref<string>('')
+// 开启了选择模式
+if (tableOption.value.selection && props.select && props.select.length) {
+  if (tableOption.value.selection === 'radio') {
+    // 单选
+    if (props.select.length > 1) {
+      throw new Error('在radio选择模式下，select只能一条')
+    }
+    // @ts-ignore
+    const select: any = props.data?.find((item: any) => item[tableOption.value.option?.rowKey as string] === props.select[0][tableOption.value.option?.rowKey]);
+    if (select) {
+      currentRadio.value = JSON.stringify(select)
+    }
+  } else {
+    // 多选
+  }
+}
 
 /**
  * 单选选中
@@ -58,15 +78,37 @@ const currentRadio = ref<string>('')
  */
 const tableRadioChange = (value: string | number | boolean) => {
   currentRadio.value = value as string;
+  const selects = [JSON.parse(value as string)];
+  emits('selectionChange', selects)
+  emits('update:select', selects)
 }
 
-console.log(props, tableOption.value);
+/**
+ * 排序变化
+ * @param data 
+ */
+const tableSortChange = (data: {column: any, prop: string, order: string}) => {
+  emits('sortChange', data);
+}
+
+/**
+ * 表格多选改变
+ * @param selection 
+ * @param row 
+ */
+const tableSelectionChange = (selection: any) => {
+  const selects = JSON.parse(JSON.stringify(selection));
+  emits('selectionChange', selects);
+  emits('update:select', selects)
+}
 </script>
 
 <template>
   <div class="m-table">
     <el-table
       :data="data"
+      @sort-change="tableSortChange"
+      @selection-change="tableSelectionChange"
     >
       <!--选择列-->
       <!--多选框-->
@@ -74,12 +116,13 @@ console.log(props, tableOption.value);
       <!--单选框-->
       <el-table-column v-if="tableOption.selection && tableOption.selection === 'radio'" :width="tableOption.selectionWidth" align="center">
         <template #default="{row}">
+          {{ currentRadio }} {{ row }}
           <el-radio class="table-radio" v-model="currentRadio" :label="JSON.stringify(row)" @change="tableRadioChange">{{ '' }}</el-radio>
         </template>
       </el-table-column>
       <!--索引列-->
       <el-table-column v-if="tableOption.index" type="index" :width="tableOption.indexWidth" align="center" />
-      <el-table-column label="测试" prop="test" align="center" />
+      <el-table-column sortable="custom" label="测试" prop="test" align="center" />
       <!-- <template v-if=""></template> -->
     </el-table>
   </div>

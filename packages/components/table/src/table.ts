@@ -1,6 +1,8 @@
 import { buildProps, definePropType } from "@m-element-plus/utils";
 import { useSizeProp } from '@m-element-plus/hooks'
 
+import { isString } from "@m-element-plus/utils";
+
 // 默认排序
 export interface ITableDefaultSort {
   // 排序字段
@@ -34,8 +36,6 @@ export interface ITableOption {
   defaultSort?: ITableDefaultSort;
   // 底部出现合计行
   showSummary?: boolean;
-  // 是否懒加载
-  lazy?: boolean;
   // 表格配置项
   column: ITableOptionColumn[];
 }
@@ -65,11 +65,44 @@ export const tableProps = buildProps({
   option: {
     type: definePropType<ITableOption>(Object),
     required: true
+  },
+  /**
+   * @description 选择的数据
+   */
+  select: {
+    type: Array,
+    default: () => []
   }
 })
 
 export const tableEmits = {
-  // 更新data数据
-  'update:data': (d: any[]) => void(0)
+  /**
+   * 更新data数据
+   * @param {any[]} d 数据 
+   * @description 更新data数据
+   * @returns 
+   */
+  ['update:data']: (d: any[]) => true,
+  /**
+   * 更新select数据
+   * @param {any} arr 数据 
+   * @returns 更新select数据
+   */
+  ['update:select']: (arr: any) => true, 
+  /**
+   * 排序改变
+   * @param {any} column 列
+   * @param {string} prop 值
+   * @param {string} order 排序
+   * @description 排序改变
+   * @returns 
+   */
+  sortChange: (data: {column: any, prop: string, order: string}) => isString(data.prop) && isString(data.order),
+  /**
+   * 选择改变
+   * @param {any} selection 选择的数据数组
+   * @description 选择改变
+   * @returns 
+   */
+  selectionChange: (selection: any) => true
 }
-

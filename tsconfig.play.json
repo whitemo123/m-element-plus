@@ -3,7 +3,7 @@
   "compilerOptions": {
     "allowJs": true,
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": ["unplugin-vue-macros/macros-global","./global.d.ts"]
+    "types": ["unplugin-vue-macros/macros-global","./global.d.ts", "element-plus/global"]
   },
   "include": [
     "packages",

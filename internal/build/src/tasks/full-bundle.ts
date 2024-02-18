@@ -9,7 +9,7 @@ import commonjs from '@rollup/plugin-commonjs'
 import esbuild, { minify as minifyPlugin } from 'rollup-plugin-esbuild'
 import { generateExternal, writeBundles, formatBundleFilename } from '../utils'
 import path from 'path'
-
+import { MElementPlusAlias } from '../plugins/m-element-plus-alias'
 import { withTaskName } from "../utils";
 import { mepOutput, mepRoot, PKG_BRAND_NAME, PKG_CAMELCASE_NAME } from "../constant";
 import { version } from '../../../../packages/m-element-plus/version'
@@ -22,6 +22,7 @@ const banner = `/*! ${PKG_BRAND_NAME} v${version} */\n`
 
 async function buildFullEntry(minify: boolean) {
   const plugins: Plugin[] = [
+    MElementPlusAlias(),
     // @ts-ignore
     vue(),
     nodeResolve({

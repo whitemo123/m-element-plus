@@ -35,6 +35,14 @@ export const copyTypesDefinitions: TaskFunction = (done) => {
   return parallel(copyTypes('esm'), copyTypes('cjs'))(done)
 }
 
+export const copyFullStyle = async () => {
+  await mkdir(path.resolve(mepOutput, 'dist'), { recursive: true })
+  await copyFile(
+    path.resolve(mepOutput, 'theme-chalk/index.css'),
+    path.resolve(mepOutput, 'dist/index.css')
+  )
+}
+
 export default series(
   // 清理打包目录
   withTaskName('clean', () => run('pnpm run clean')),
@@ -48,8 +56,13 @@ export default series(
     runTask('buildFullBundle'),
     // 打包类型
     runTask('generateTypesDefinitions'),
-    // 打包scss
-    runTask('buildSass')
+    // 打包css
+    series(
+      withTaskName('buildThemeChalk', () => 
+        run('pnpm run -C packages/theme-chalk build')
+      ),
+      copyFullStyle
+    )
   ),
 
   // 移动打包文件

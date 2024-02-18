@@ -1,6 +1,6 @@
 import type { ProjectManifest } from '@pnpm/types'
 import { Module, buildConfig } from '.'
-import { PKG_PREFIX } from '../constant'
+import { PKG_PREFIX, PKG_NAME } from '../constant'
 
 /**
  * 筛选不排除的文件
@@ -45,6 +45,7 @@ export const pathRewriter = (module: Module) => {
   const config = buildConfig[module]
 
   return (id: string) => {
+    id = id.replaceAll(`${PKG_PREFIX}/theme-chalk`, `${PKG_NAME}/theme-chalk`)
     id = id.replaceAll(`${PKG_PREFIX}/`, `${config.bundle.path}/`)
     return id
   }

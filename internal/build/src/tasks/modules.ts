@@ -8,6 +8,7 @@ import esbuild from 'rollup-plugin-esbuild'
 import glob from 'fast-glob'
 import { generateExternal, writeBundles } from '../utils'
 import { excludeFiles } from '../utils'
+import { MElementPlusAlias } from '../plugins/m-element-plus-alias'
 
 import { pkgRoot, mepRoot } from '../constant'
 import { buildConfigEntries } from '../utils'
@@ -27,6 +28,7 @@ export const buildModules = async () => {
   const bundle = await rollup({
     input,
     plugins: [
+      MElementPlusAlias(),
       // VueMacros({
       //   setupComponent: true,
       //   setupSFC: false,
