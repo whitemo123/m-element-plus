@@ -3,40 +3,70 @@ import { useSizeProp } from '@m-element-plus/hooks'
 
 import { isString } from "@m-element-plus/utils";
 
-// 默认排序
+import type { ICommonColumn } from "../../common/types";
+
+/**
+ * 默认排序
+ */
 export interface ITableDefaultSort {
-  // 排序字段
+  /**
+   * @description 排序字段
+   */
   prop?: string;
-  // 排序顺序
+  /**
+   * @description 排序顺序
+   */
   order?: 'ascending' | 'descending'
 }
 
-// 表格配置
-export interface ITableOptionColumn {
+/**
+ * 表格配置
+ */
+export interface ITableOptionColumn extends ICommonColumn {
 
 }
 
 
 export interface ITableOption {
-  // 斑马纹
+  /**
+   * @description 斑马纹
+   */
   stripe?: boolean;
-  // 是否有序号
+  /**
+   * @description 是否有序号
+   */
   index?: boolean;
-  // 序号列宽度
+  /**
+   * @description 序号列宽度
+   */
   indexWidth?: number;
-  // 是否有选择款
+  /**
+   * @description 是否有选择款
+   */
   selection?: 'radio' | 'checkbox';
-  // 选择框宽度
+  /**
+   * @description 选择框宽度
+   */
   selectionWidth?: number;
-  // 是否带边框
+  /**
+   * @description 是否带边框
+   */
   border?: boolean;
-  // 表格指定key
+  /**
+   * @description 表格指定key
+   */
   rowKey?: string;
-  // 表格默认排序
+  /**
+   * @description 表格默认排序
+   */
   defaultSort?: ITableDefaultSort;
-  // 底部出现合计行
+  /**
+   * @description 底部出现合计行
+   */
   showSummary?: boolean;
-  // 表格配置项
+  /**
+   * @description 表格配置项
+   */
   column: ITableOptionColumn[];
 }
 
@@ -97,7 +127,7 @@ export const tableEmits = {
    * @description 排序改变
    * @returns 
    */
-  sortChange: (data: {column: any, prop: string, order: string}) => isString(data.prop) && isString(data.order),
+  sortChange: (data: {column: any, prop: string, order: string | null}) => isString(data.prop) && (data.order === null || isString(data.order)),
   /**
    * 选择改变
    * @param {any} selection 选择的数据数组

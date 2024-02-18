@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import { ElTable } from 'element-plus'
 import { ITableOption, tableProps, tableEmits } from './table'
 
 defineOptions({
@@ -43,42 +44,27 @@ const tableOption = ref<ITableOption>({
 // 当前表格单选值
 const currentRadio = ref<string>('')
 
+const tableRef = ref<InstanceType<typeof ElTable>>()
+
 // 导出
 const emits = defineEmits(tableEmits)
 
-// 如果单选模式需要指定rowKey（默认id）
-if (props.option?.selection && props.option?.selection === 'radio') {
-  // 合并表格配置
-  tableOption.value = Object.assign(defaultTableOption, {rowKey: 'id'}, props.option)
-} else {
-  // 合并表格配置
-  tableOption.value = Object.assign(defaultTableOption, props.option)
-}
-
-// 开启了选择模式
-if (tableOption.value.selection && props.select && props.select.length) {
-  if (tableOption.value.selection === 'radio') {
-    // 单选
-    if (props.select.length > 1) {
-      throw new Error('在radio选择模式下，select只能一条')
-    }
-    // @ts-ignore
-    const select: any = props.data?.find((item: any) => item[tableOption.value.option?.rowKey as string] === props.select[0][tableOption.value.option?.rowKey]);
-    if (select) {
-      currentRadio.value = JSON.stringify(select)
-    }
-  } else {
-    // 多选
-  }
-}
+// 合并表格配置
+tableOption.value = Object.assign(defaultTableOption, props.option)
 
 /**
- * 单选选中
- * @param value 
+ * 单选框点击
+ * @param {string} value 值
  */
-const tableRadioChange = (value: string | number | boolean) => {
-  currentRadio.value = value as string;
-  const selects = [JSON.parse(value as string)];
+const tableRadioClick = (value: string) => {
+  let selects: any;
+  if (currentRadio.value === value) {
+    currentRadio.value = ''
+    selects = []
+  } else {
+    currentRadio.value = value as string
+    selects = [JSON.parse(value as string)]
+  }
   emits('selectionChange', selects)
   emits('update:select', selects)
 }
@@ -101,12 +87,39 @@ const tableSelectionChange = (selection: any) => {
   emits('selectionChange', selects);
   emits('update:select', selects)
 }
+
+onMounted(() => {
+  // 开启了选择模式
+  if (tableOption.value.selection && props.select && props.select.length) {
+    if (tableOption.value.selection === 'radio') {
+      // 单选
+      if (props.select.length > 1) {
+        throw new Error('在radio选择模式下，select只能一条')
+      }
+      currentRadio.value = JSON.stringify(props.select[0])
+    } else {
+      // 多选
+      for (let i = 0; i < props.select.length; i++) {
+        tableRef.value?.toggleRowSelection(props.select[i], true)
+      }
+    }
+  }
+})
+
+// TODO: 单选模式列表刷新未清除
 </script>
 
 <template>
   <div class="m-table">
     <el-table
+      ref="tableRef"
       :data="data"
+      :size="size"
+      :stripe="tableOption.stripe"
+      :border="tableOption.border"
+      :rowKey="tableOption.rowKey"
+      :default-sort="(tableOption.defaultSort as any)"
+      :show-summary="tableOption.showSummary"
       @sort-change="tableSortChange"
       @selection-change="tableSelectionChange"
     >
@@ -116,8 +129,7 @@ const tableSelectionChange = (selection: any) => {
       <!--单选框-->
       <el-table-column v-if="tableOption.selection && tableOption.selection === 'radio'" :width="tableOption.selectionWidth" align="center">
         <template #default="{row}">
-          {{ currentRadio }} {{ row }}
-          <el-radio class="table-radio" v-model="currentRadio" :label="JSON.stringify(row)" @change="tableRadioChange">{{ '' }}</el-radio>
+          <el-radio class="table-radio" @click.native.prevent="tableRadioClick(JSON.stringify(row))" v-model="currentRadio" :label="JSON.stringify(row)">{{ '' }}</el-radio>
         </template>
       </el-table-column>
       <!--索引列-->

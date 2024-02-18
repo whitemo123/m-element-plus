@@ -21,12 +21,9 @@ const tableData = ref<any>([
   },
 ])
 
-const selects = ref<any>([
-  {
-    test: 2,
-    id: 2
-  }
-])
+const selects = ref<any>([])
+
+selects.value = [tableData.value[1]]
 
 const sortChange = (data: {column: any, prop: string, order: string}) => {
   console.log(data);
@@ -35,12 +32,22 @@ const sortChange = (data: {column: any, prop: string, order: string}) => {
 const selectionChange = (selection: any) => {
   console.log(selection)
 }
+
+const test = () => {
+  tableData.value = [
+    {
+      id: 3,
+      test: 3
+    },
+  ]
+}
 </script>
 
 <template>
   <div>
     {{ selects }}
-    <MTable rowKey="test" v-model:select="selects" :data="tableData" :option="tableOption" @sort-change="sortChange" @selection-change="selectionChange" />
+    <MTable size="small" v-model:select="selects" :data="tableData" :option="tableOption" @sort-change="sortChange" @selection-change="selectionChange" />
+    <button @click="test">测试</button>
   </div>
 </template>
 
