@@ -1,9 +1,10 @@
+import { VNode } from 'vue'
 import { buildProps, definePropType } from "@m-element-plus/utils";
 import { useSizeProp } from '@m-element-plus/hooks'
 
 import { isString } from "@m-element-plus/utils";
 
-import type { ICommonColumn } from "../../common/types";
+import type { ICommonColumn, InputTypes, DateTypes } from "../../common/types";
 
 /**
  * 默认排序
@@ -23,7 +24,51 @@ export interface ITableDefaultSort {
  * 表格配置
  */
 export interface ITableOptionColumn extends ICommonColumn {
-
+  /**
+   * @description 列宽度
+   */
+  width?: number;
+  /**
+   * @description 列是否固定在左侧或者右侧，true 表示固定在左侧
+   * @example true | 'left' | 'right'
+   */
+  fixed?: true | 'left' | 'right';
+  /**
+   * @description 对应列是否可以排序，如果设置为 'custom'，则代表用户希望远程排序，需要监听 Table 的 sort-change 事件
+   * @example true | false | 'custom'
+   */
+  sortable?: true | false | 'custom';
+  /**
+   * @description 用来格式化列内容
+   * @param row 行数据
+   * @returns 
+   */
+  formatter?: (row: any) => VNode;
+  /**
+   * @description 是否隐藏
+   */
+  hide?: boolean;
+  /**
+   * @description 对齐方式
+   * @example 'left' | 'center' | 'right'
+   */
+  align?: 'left' | 'center' | 'right';
+  /**
+   * @description 当内容过长被隐藏时显示 tooltip
+   */
+  overHidden?: boolean;
+  /**
+   * @description 开启插槽
+   */
+  slot?: boolean;
+  /**
+   * @description 类型
+   */
+  type?: InputTypes | DateTypes | 'select';
+  /**
+   * @description 帮助信息文字
+   */
+  help?: string;
 }
 
 
@@ -42,6 +87,7 @@ export interface ITableOption {
   indexWidth?: number;
   /**
    * @description 是否有选择款
+   * @example 'radio' | 'checkbox'
    */
   selection?: 'radio' | 'checkbox';
   /**

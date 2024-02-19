@@ -25,6 +25,8 @@ async function buildFullEntry(minify: boolean) {
     MElementPlusAlias(),
     // @ts-ignore
     vue(),
+    // @ts-ignore
+    vueJsx(),
     nodeResolve({
       extensions: ['.mjs', '.js', '.json', '.ts'],
     }),

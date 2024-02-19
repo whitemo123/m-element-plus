@@ -1,5 +1,23 @@
-.table-radio {
-  .el-radio__label {
-    display: none;
+.m-table {
+  // 清除单选模式下的单选空格
+  .table-radio {
+    .el-radio__label {
+      display: none;
+    }
+  }
+
+  .el-table {
+    // 解决tool-tip纯数字不换行问题
+    .el-popper span:first-child {
+      word-break: break-word;
+      word-wrap: break-word;
+      white-space: -hp-pre-wrap;
+      white-space: -o-pre-wrap;
+      white-space: -pre-wrap;
+      white-space: -moz-pre-wrap;
+      white-space: pre;
+      white-space: pre-wrap;
+      white-space: pre-line;
+    }
   }
 }

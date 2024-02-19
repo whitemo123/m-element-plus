@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { MRender } from '@m-element-plus/components'
 import { ElTable } from 'element-plus'
-import { ITableOption, tableProps, tableEmits } from './table'
+import { ITableOption, tableProps, tableEmits, ITableOptionColumn } from './table'
 
 defineOptions({
   name: 'MTable',
@@ -41,6 +42,10 @@ const tableOption = ref<ITableOption>({
   column: []
 })
 
+const tableColumn = computed<ITableOptionColumn[]>(() => {
+  return tableOption.value.column.filter(item => !item.hide)
+})
+
 // 当前表格单选值
 const currentRadio = ref<string>('')
 
@@ -75,6 +80,40 @@ const tableRadioClick = (value: string) => {
  */
 const tableSortChange = (data: {column: any, prop: string, order: string}) => {
   emits('sortChange', data);
+}
+
+/**
+ * 获取字典value值
+ * @param column 列
+ * @param row 行数据
+ */
+const getDictValue = (column: ITableOptionColumn, row: any): string => {
+  const findLabelByValue = (dicData: IDictValue[], value: any) => {
+    const dictItem = (dicData || []).find(dict => dict.value === value)
+    if (dictItem === undefined) {
+      return undefined;
+    }
+    return dictItem.label
+  }
+  let dictLabel: string | undefined;
+  if (column.type === 'select' && column.multiple) {
+    // select下拉且开启多选
+    const values: any = (row[column.prop] instanceof Array) ? row[column.prop] : row[column.prop].split(',')
+    const result: string[] = []
+    for (let i = 0; i < values.length; i++) {
+      dictLabel = findLabelByValue((column.dicData || []), values[i])
+      if (dictLabel === undefined) {
+        break;
+      }
+      result.push(dictLabel)
+    }
+    return result.join(',')
+  }
+  dictLabel = findLabelByValue((column.dicData || []), row[column.prop])
+  if (dictLabel === undefined) {
+    return ''
+  }
+  return dictLabel
 }
 
 /**
@@ -134,8 +173,31 @@ onMounted(() => {
       </el-table-column>
       <!--索引列-->
       <el-table-column v-if="tableOption.index" type="index" :width="tableOption.indexWidth" align="center" />
-      <el-table-column sortable="custom" label="测试" prop="test" align="center" />
-      <!-- <template v-if=""></template> -->
+      <el-table-column
+        v-for="(column, columnIndex) in tableColumn"
+        :key="columnIndex"
+        :label="column.label"
+        :prop="column.prop"
+        :align="column.align"
+        :show-overflow-tooltip="column.overHidden"
+      >
+        <!--帮助信息文字-->
+        <template v-if="column.help" #header>
+          <el-tooltip :content="column.help" placement="top">
+            <div style="display: inline-flex; align-items: center; justify-content: center;">
+              <span style="margin-right: 2px;">{{column.label}}</span><QuestionFilled style="width: 12px; height: 12px;" />
+            </div>
+          </el-tooltip>
+        </template>
+        <template #default="{row, $index}">
+          <!--开启插槽模式-->
+          <slot v-if="column.slot" :name="column.prop" v-bind="{row, $index}" />
+          <!--自定义formatter-->
+          <MRender v-else-if="column.formatter" :render="column.formatter(row)" />
+          <!--带dicData的（例如select、checkbox、radio）-->
+          <span v-else-if="column.type === 'select'">{{ getDictValue(column, row) }}</span>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>

@@ -41,6 +41,8 @@ export const buildModules = async () => {
       // }),
       // @ts-ignore
       vue(),
+      // @ts-ignore
+      vueJsx(),
       nodeResolve({
         extensions: ['.mjs', '.js', '.json', '.ts'],
       }),

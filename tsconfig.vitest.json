@@ -6,6 +6,6 @@
     "types": ["node", "jsdom", "unplugin-vue-macros/macros-global"],
     "skipLibCheck": true
   },
-  "include": ["packages", "vitest.setup.ts", "typings/env.d.ts"],
+  "include": ["packages", "typings/env.d.ts"],
   "exclude": ["node_modules", "dist", "**/*.md"]
 }
