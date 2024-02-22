@@ -34,10 +34,6 @@ export interface IDictValue {
    * @description 值
    */
   value: string | number | boolean;
-  /**
-   * @description 颜色
-   */
-  color?: string;
 }
 
 /**
@@ -74,4 +70,34 @@ export interface ISelectColumn {
    * @description 是否多选
    */
   multiple?: boolean;
+  /**
+   * @description 可清除
+   */
+  clearable?: boolean;
+  /**
+   * @description 筛选
+   */
+  filterable?: boolean;
+  /**
+   * 自定义筛选方法
+   * @description 自定义筛选方法
+   * @param {string} keyword 筛选词s
+   * @returns 
+   */
+  filterMethod?: (keyword: string) => void,
+  /**
+   * @description 是否从服务器远程加载
+   */
+  remote?: boolean;
+  /**
+   * 远程搜索
+   * @description 远程搜索
+   * @param {string} keyword 筛选词
+   * @returns 
+   */
+  remoteMethod?: (keyword: string) => void,
+  /**
+   * @description 是否正在从远程获取数据
+   */
+  loading?: boolean;
 }

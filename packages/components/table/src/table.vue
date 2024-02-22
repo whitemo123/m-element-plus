@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { MRender } from '@m-element-plus/components'
 import { ElTable } from 'element-plus'
 import { ITableOption, tableProps, tableEmits, ITableOptionColumn } from './table'
+import type { IDictValue } from '../../common/types'
 
 defineOptions({
   name: 'MTable',
@@ -89,7 +90,7 @@ const tableSortChange = (data: {column: any, prop: string, order: string}) => {
  */
 const getDictValue = (column: ITableOptionColumn, row: any): string => {
   const findLabelByValue = (dicData: IDictValue[], value: any) => {
-    const dictItem = (dicData || []).find(dict => dict.value === value)
+    const dictItem = (dicData || []).find(dict => column.multiple ? dict.value == value : dict.value === value)
     if (dictItem === undefined) {
       return undefined;
     }
@@ -98,7 +99,7 @@ const getDictValue = (column: ITableOptionColumn, row: any): string => {
   let dictLabel: string | undefined;
   if (column.type === 'select' && column.multiple) {
     // select下拉且开启多选
-    const values: any = (row[column.prop] instanceof Array) ? row[column.prop] : row[column.prop].split(',')
+    const values: any = (row[column.prop] instanceof Array) ? row[column.prop] : typeof row[column.prop] === 'string' ? row[column.prop].split(',') : [row[column.prop]]
     const result: string[] = []
     for (let i = 0; i < values.length; i++) {
       dictLabel = findLabelByValue((column.dicData || []), values[i])
@@ -195,7 +196,7 @@ onMounted(() => {
           <!--自定义formatter-->
           <MRender v-else-if="column.formatter" :render="column.formatter(row)" />
           <!--带dicData的（例如select、checkbox、radio）-->
-          <span v-else-if="column.type === 'select'">{{ getDictValue(column, row) }}</span>
+          <span v-else-if="column.type === 'select' || column.type === 'checkbox' || column.type === 'radio'">{{ getDictValue(column, row) }}</span>
         </template>
       </el-table-column>
     </el-table>

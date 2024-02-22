@@ -29,6 +29,7 @@ const tableOption: ITableOption = {
       prop: "status",
       type: "select",
       align: "center",
+      multiple: true,
       dicData: [
         {
           label: "启用",
@@ -60,7 +61,7 @@ const tableData = ref<any>([
     id: 3,
     test: '测试3',
     slot1: 'slot1',
-    status: 1
+    status: '1,2'
   }
 ])
 
@@ -69,7 +70,7 @@ const selects = ref<any>([])
 
 <template>
   <div>
-    <MTable size="small" v-model:select="selects" :data="tableData" :option="tableOption">
+    <MTable v-model:select="selects" :data="tableData" :option="tableOption">
       <template #slot1="{row, $index}">
         {{ row }} {{ $index }}
       </template>
