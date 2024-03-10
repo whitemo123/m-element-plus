@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ITableOption, MTable } from '@m-element-plus/components'
+import { ITableOption, MTable, MCrud, MPagination } from '@m-element-plus/components'
 import '@m-element-plus/theme-chalk/dist/index.css'
 
 
@@ -85,11 +85,12 @@ const selects = ref<any>([])
 
 <template>
   <div>
-    <MTable v-model:select="selects" :data="tableData" :option="tableOption">
-      <template #slot1="{row, $index}">
-        测试
-      </template>
-    </MTable>
+    <MCrud :data="tableData" />
+<!--    <MTable size="small" v-model:select="selects" :data="tableData" :option="tableOption">-->
+<!--      <template #slot1="{row, $index}">-->
+<!--        测试-->
+<!--      </template>-->
+<!--    </MTable>-->
   </div>
 </template>
 

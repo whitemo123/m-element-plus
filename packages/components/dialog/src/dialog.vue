@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useSlots } from "vue";
+import { useSlots, ref } from "vue";
 import { dialogProps } from "./dialog";
 
 defineOptions({
@@ -9,6 +9,8 @@ defineOptions({
 const props = defineProps(dialogProps)
 
 const slots = useSlots()
+
+const dialogLoading = ref(false)
 
 const emits = defineEmits<{
   /**
@@ -44,6 +46,21 @@ const enter = () => {
 const close = () => {
 
 }
+
+/**
+ * 弹窗关闭前
+ * @param done 执行成功
+ */
+const onBeforeClose = (done: Function) => {
+  if (dialogLoading.value) {
+    return false;
+  }
+  if (props.beforeClose) {
+    props.beforeClose(done)
+  } else {
+    done()
+  }
+}
 </script>
 
 <template>
@@ -55,18 +72,18 @@ const close = () => {
     :appendToBody="appendToBody"
     :closeOnClickModal="closeOnClickModal"
     :closeOnnPressEscape="closeOnnPressEscape"
-    :beforeClose="beforeClose"
+    :beforeClose="onBeforeClose"
     :draggable="draggable"
     :destroyOnClose="destroyOnClose"
     @close="closeDialog"
   >
-    <slot />
+    <slot :loading="dialogLoading" />
     <template #footer>
       <div v-if="!slots.btns" class="dialog-footer">
-        <el-button v-if="cancelBtn" :size="size" icon="CircleClose" @click="closeDialog">取消</el-button>
-        <el-button v-if="saveBtn" :size="size" icon="CircleCheck" type="primary" @click="closeDialog">确认</el-button>
+        <el-button v-if="cancelBtn" :size="size" icon="CircleClose" :loading="dialogLoading" @click="closeDialog">取消</el-button>
+        <el-button v-if="saveBtn" :size="size" icon="CircleCheck" :loading="dialogLoading" type="primary" @click="closeDialog">确认</el-button>
       </div>
-      <slot v-else name="btns"></slot>
+      <slot :loading="dialogLoading" v-else name="btns"></slot>
     </template>
   </el-dialog>
 </template>

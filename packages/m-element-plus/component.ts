@@ -4,6 +4,7 @@ import { MDialog } from '@m-element-plus/components/dialog'
 import { MPicture } from '@m-element-plus/components/picture'
 import { MTable } from '@m-element-plus/components/table'
 import { MCrud } from '@m-element-plus/components/crud'
+import { MPagination } from '@m-element-plus/components/pagination'
 
 import type { Plugin } from 'vue'
 
@@ -13,5 +14,6 @@ export default [
   MDialog,
   MPicture,
   MTable,
-  MCrud
+  MCrud,
+  MPagination
 ] as Plugin[]

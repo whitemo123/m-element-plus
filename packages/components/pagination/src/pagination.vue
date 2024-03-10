@@ -1,0 +1,42 @@
+<script setup lang="ts">
+import {paginationEmits, paginationProps} from "./pagination";
+
+defineOptions({
+  name: "MPagination"
+})
+
+defineProps(paginationProps)
+
+const emits = defineEmits(paginationEmits)
+
+/**
+ * 页数变化
+ * @param size 页大小
+ */
+const handleSizeChange = (size: number) => {
+  emits('update:pageSize', size)
+}
+
+/**
+ * 页发生变化
+ * @param page 页
+ */
+const handleCurrentChange = (page: number) => {
+  emits('update:currentPage', page)
+}
+</script>
+
+<template>
+  <el-pagination
+    :current-page="currentPage"
+    :page-size="pageSize"
+    :page-sizes="pageSizes"
+    :small="small"
+    :disabled="disabled"
+    :background="background"
+    :layout="layout"
+    :total="total"
+    @size-change="handleSizeChange"
+    @current-change="handleCurrentChange"
+  />
+</template>

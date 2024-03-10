@@ -66,7 +66,7 @@ export const dialogProps= buildProps({
    */
   draggable: {
     type: Boolean,
-    default: false
+    default: true
   },
   /**
    * @description 当关闭 Dialog 时，销毁其中的元素
