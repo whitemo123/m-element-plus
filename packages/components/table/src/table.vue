@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue'
-import { MRender } from '@m-element-plus/components'
+import { MRender, MPicture, MQrcode, MDialog } from '@m-element-plus/components'
 import { ElTable } from 'element-plus'
+import QrcodeFix from 'qrcodejs2-fix'
 import { ITableOption, tableProps, tableEmits, ITableOptionColumn } from './table'
 import type { IDictValue } from '../../common/types'
+import { isArray } from '@m-element-plus/utils'
 
 defineOptions({
   name: 'MTable',
@@ -50,7 +52,14 @@ const tableColumn = computed<ITableOptionColumn[]>(() => {
 // 当前表格单选值
 const currentRadio = ref<string>('')
 
+// table Ref
 const tableRef = ref<InstanceType<typeof ElTable>>()
+
+// qrcode预览
+const qrcodePreview = ref(false)
+
+// qrcode值
+const previewQrcode = ref('')
 
 // 导出
 const emits = defineEmits(tableEmits)
@@ -118,6 +127,23 @@ const getDictValue = (column: ITableOptionColumn, row: any): string => {
 }
 
 /**
+ * @description 获取预览图片
+ * @param column 
+ * @param row 
+ */
+const getPreviewPics = (column: ITableOptionColumn, row: any): string[] => {
+  let value = row[column.prop]
+  if (!value) {
+    return []
+  }
+  if(isArray(value)) {
+    return value.map(item => (column.imgPrefix || '') + item)
+  }
+  value = new String(value)
+  return value.split((column.imgSuffix || ',')).map(item => (column.imgPrefix || '') + item)
+}
+
+/**
  * 表格多选改变
  * @param selection 
  * @param row 
@@ -126,6 +152,27 @@ const tableSelectionChange = (selection: any) => {
   const selects = JSON.parse(JSON.stringify(selection));
   emits('selectionChange', selects);
   emits('update:select', selects)
+}
+
+/**
+ * @description 预览qrcode二维码
+ * @param code qrcode二维码
+ */
+const openQrcodePreview = (code: string) => {
+  previewQrcode.value = code;
+  if (!code) {
+    return
+  }
+  qrcodePreview.value = true
+  setTimeout(() => {
+    const dom = document.querySelector("#qrcode-preview")
+    dom!.innerHTML = ''
+    new QrcodeFix(dom, {
+      text: code,
+      width: 180,
+      height: 180
+    })
+  }, 0)
 }
 
 onMounted(() => {
@@ -197,8 +244,27 @@ onMounted(() => {
           <MRender v-else-if="column.formatter" :render="column.formatter(row)" />
           <!--带dicData的（例如select、checkbox、radio）-->
           <span v-else-if="column.type === 'select' || column.type === 'checkbox' || column.type === 'radio'">{{ getDictValue(column, row) }}</span>
+          <!--图片-->
+          <MPicture v-else-if="column.type === 'picture' && getPreviewPics(column, row).length" :src="getPreviewPics(column, row)[0]" :preview-src-list="getPreviewPics(column, row)" />
+          <!--qrcode-->
+          <MQrcode v-if="column.type === 'qrcode'" :align="column.align" :text="row[column.prop]" @click="openQrcodePreview" />
         </template>
       </el-table-column>
     </el-table>
+    <!-- qrcode预览 -->
+    <MDialog
+      v-model="qrcodePreview"
+      title="预览"
+      :size="size"
+      width="300px"
+      :save-btn="false"
+      :cancel-btn="false"
+    >
+      <div id="qrcode-preview"></div>
+      <div class="qrcode-preview-code">{{ previewQrcode }}</div>
+      <template v-slot:btns>
+        <el-button>测试</el-button>
+      </template>
+    </MDialog>
   </div>
 </template>

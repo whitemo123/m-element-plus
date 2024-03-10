@@ -64,7 +64,7 @@ export interface ITableOptionColumn extends ICommonColumn {
   /**
    * @description 类型
    */
-  type?: InputTypes | DateTypes | 'select' | 'checkbox' | 'radio';
+  type?: InputTypes | DateTypes | 'select' | 'checkbox' | 'radio' | 'picture' | 'qrcode';
   /**
    * @description 帮助信息文字
    */

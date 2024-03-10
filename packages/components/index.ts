@@ -1,3 +1,6 @@
 export * from './render'
+export * from './qrcode'
+export * from './dialog'
+export * from './picture'
 export * from './table'
 export * from './crud'

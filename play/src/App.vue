@@ -27,9 +27,8 @@ const tableOption: ITableOption = {
     {
       label: "状态",
       prop: "status",
-      type: "select",
+      type: "checkbox",
       align: "center",
-      multiple: true,
       dicData: [
         {
           label: "启用",
@@ -40,6 +39,18 @@ const tableOption: ITableOption = {
           value: 2
         },
       ]
+    },
+    {
+      label: "图片",
+      prop: "pic",
+      type: 'picture',
+      align: 'center'
+    },
+    {
+      label: "qrcode1",
+      prop: "qrcode1",
+      type: "qrcode",
+      align: "center"
     }
   ]
 }
@@ -49,20 +60,24 @@ const tableData = ref<any>([
     test: '测试1',
     id: 1,
     slot1: 'slot1',
-    status: 1
+    status: 1,
+    pic: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
+    qrcode1: '1'
   },
   {
     id: 2,
     test: '测试2',
     slot1: 'slot1',
-    status: 2
+    status: 2,
+    qrcode1: 'sasasaasaa'
   },
   {
     id: 3,
     test: '测试3',
     slot1: 'slot1',
-    status: '1,2'
-  }
+    status: '1,2',
+    qrcode1: 'sa121saa212aa21asa21'
+  },
 ])
 
 const selects = ref<any>([])
@@ -72,7 +87,7 @@ const selects = ref<any>([])
   <div>
     <MTable v-model:select="selects" :data="tableData" :option="tableOption">
       <template #slot1="{row, $index}">
-        {{ row }} {{ $index }}
+        测试
       </template>
     </MTable>
   </div>

@@ -1,7 +1,7 @@
 /**
  * @description 公共column配置
  */
-export interface ICommonColumn extends IDict, ISelectColumn {
+export interface ICommonColumn extends IDict, ISelectColumn, IPictureColumn {
   /**
    * @description 列标题
    */
@@ -100,4 +100,24 @@ export interface ISelectColumn {
    * @description 是否正在从远程获取数据
    */
   loading?: boolean;
+}
+
+
+export interface IPictureColumn {
+  /**
+   * @description 图片宽度
+   */
+  imgWidth?: string;
+  /**
+   * @description 图片高度
+   */
+  imgHeight?: string;
+  /**
+   * @description 前缀
+   */
+  imgPrefix?: string;
+  /**
+   * @description 间隔
+   */
+  imgSuffix?: string;
 }
