@@ -8,6 +8,7 @@ declare module '@vue/runtime-core' {
     MTable: typeof import('m-element-plus')['MTable']
     MCrud: typeof import('m-element-plus')['MCrud']
     MPagination: typeof import('m-element-plus')['MPagination']
+    MSearch: typeof import('m-element-plus')['MSearch']
   }
 }
 

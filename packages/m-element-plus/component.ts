@@ -5,6 +5,7 @@ import { MPicture } from '@m-element-plus/components/picture'
 import { MTable } from '@m-element-plus/components/table'
 import { MCrud } from '@m-element-plus/components/crud'
 import { MPagination } from '@m-element-plus/components/pagination'
+import { MSearch } from '@m-element-plus/components/search'
 
 import type { Plugin } from 'vue'
 
@@ -15,5 +16,6 @@ export default [
   MPicture,
   MTable,
   MCrud,
-  MPagination
+  MPagination,
+  MSearch
 ] as Plugin[]

@@ -262,9 +262,6 @@ onMounted(() => {
     >
       <div id="qrcode-preview"></div>
       <div class="qrcode-preview-code">{{ previewQrcode }}</div>
-      <template v-slot:btns="{loading}">
-        <el-button :loading="loading">测试</el-button>
-      </template>
     </MDialog>
   </div>
 </template>

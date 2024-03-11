@@ -1,4 +1,4 @@
-import { buildProps, definePropType } from "@m-element-plus/utils";
+import { buildProps, definePropType, isNumber } from "@m-element-plus/utils";
 import { useSizeProp } from '@m-element-plus/hooks'
 
 import type { ITableDefaultSort, ITableOption } from "@m-element-plus/components/table";
@@ -74,6 +74,13 @@ export const crudProps = buildProps({
     required: true
   },
   /**
+   * @description 整体加载
+   */
+  loading: {
+    type: Boolean,
+    default: false
+  },
+  /**
    * @description 表格配置
    */
   option: {
@@ -81,3 +88,7 @@ export const crudProps = buildProps({
     required: true
   }
 })
+
+export const crudEmits = {
+  ['update:page']: (page: ICrudPage) => isNumber(page.page) && isNumber(page.limit),
+}

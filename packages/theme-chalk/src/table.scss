@@ -22,6 +22,12 @@
   }
 }
 
+.m-column-picture {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 #qrcode-preview {
   display: flex;
   justify-content: center;

@@ -1,8 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ITableOption, MTable, MCrud, MPagination } from '@m-element-plus/components'
+import {ITableOption, MTable, MCrud, MPagination, ICrudPage} from '@m-element-plus/components'
 import '@m-element-plus/theme-chalk/dist/index.css'
 
+const query = ref<ICrudPage>({
+  page: 1,
+  limit: 10
+})
+
+const total = ref(10)
+
+const tableLoading = ref(false)
 
 const tableOption: ITableOption = {
   column: [
@@ -85,12 +93,13 @@ const selects = ref<any>([])
 
 <template>
   <div>
-    <MCrud :data="tableData" />
-<!--    <MTable size="small" v-model:select="selects" :data="tableData" :option="tableOption">-->
-<!--      <template #slot1="{row, $index}">-->
-<!--        测试-->
-<!--      </template>-->
-<!--    </MTable>-->
+    <MCrud
+      v-model:page="query"
+      :loading="tableLoading"
+      :data="tableData"
+      :total="total"
+      :option="tableOption"
+    />
   </div>
 </template>
 

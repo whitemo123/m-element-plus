@@ -62,4 +62,6 @@ export const paginationProps = buildProps({
 export const paginationEmits = {
   ['update:currentPage']: (page: number) => isNumber(page),
   ['update:pageSize']: (pageSize: number) => isNumber(pageSize),
+  currentPage: (page: number) => isNumber(page),
+  pageSize: (pageSize: number) => isNumber(pageSize),
 }

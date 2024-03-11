@@ -15,6 +15,7 @@ const emits = defineEmits(paginationEmits)
  */
 const handleSizeChange = (size: number) => {
   emits('update:pageSize', size)
+  emits('pageSize', size)
 }
 
 /**
@@ -23,6 +24,7 @@ const handleSizeChange = (size: number) => {
  */
 const handleCurrentChange = (page: number) => {
   emits('update:currentPage', page)
+  emits('currentPage', page)
 }
 </script>
 
