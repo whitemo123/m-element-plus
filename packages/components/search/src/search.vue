@@ -6,6 +6,8 @@ defineOptions({
 
 <template>
   <div class="m-search-box">
-
+    <el-form>
+      
+    </el-form>
   </div>
 </template>

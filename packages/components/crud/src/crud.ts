@@ -90,5 +90,21 @@ export const crudProps = buildProps({
 })
 
 export const crudEmits = {
+  /**
+   * @description 更新page
+   * @param page 分页参数
+   * @returns 
+   */
   ['update:page']: (page: ICrudPage) => isNumber(page.page) && isNumber(page.limit),
+  /**
+   * @description 搜索
+   * @param form 搜索表单
+   * @returns 
+   */
+  search: (form: any) => true,
+  /**
+   * @description 重置
+   * @returns 
+   */
+  reset: () => true,
 }
