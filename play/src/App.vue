@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import {ITableOption, MTable, MCrud, MPagination, ICrudPage} from '@m-element-plus/components'
+import {ITableOption, MTable, MCrud, MPagination, ICrudPage, ICrudOption} from '@m-element-plus/components'
 import '@m-element-plus/theme-chalk/dist/index.css'
 
 const query = ref<ICrudPage>({
@@ -12,7 +12,7 @@ const total = ref(10)
 
 const tableLoading = ref(false)
 
-const tableOption: ITableOption = {
+const tableOption: ICrudOption = {
   column: [
     {
       label: '测试',
@@ -20,7 +20,9 @@ const tableOption: ITableOption = {
       align: 'center',
       overHidden: true,
       type: 'input',
-      help: '我是帮助信息'
+      help: '我是帮助信息',
+      search: true,
+      searchSlot: true
     },
     {
       label: 'ID',
@@ -99,7 +101,14 @@ const selects = ref<any>([])
       :data="tableData"
       :total="total"
       :option="tableOption"
-    />
+    >
+      <template v-slot:slot1="{row, $index}">
+        <span>{{ row }} {{ $index }}</span>
+      </template>
+      <template v-slot:testSearch>
+        <input />
+      </template>
+    </MCrud>
   </div>
 </template>
 

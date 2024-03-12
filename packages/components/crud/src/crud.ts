@@ -1,7 +1,8 @@
 import { buildProps, definePropType, isNumber } from "@m-element-plus/utils";
 import { useSizeProp } from '@m-element-plus/hooks'
 
-import type { ITableDefaultSort, ITableOption } from "@m-element-plus/components/table";
+import type { ITableDefaultSort, ITableOption, ITableOptionColumn } from "@m-element-plus/components/table";
+import { ISearchOptionColumn } from "@m-element-plus/components/search";
 
 // 分页参数
 export interface ICrudPage {
@@ -11,37 +12,85 @@ export interface ICrudPage {
   limit: number;
 }
 
-// 默认排序
+/**
+ * @description crud默认排序
+ */
 export interface ICrudDefaultSort extends ITableDefaultSort {}
 
-// crud配置
+/**
+ * @description crud column配置项
+ */
+export interface ICrudOptionColumn extends ITableOptionColumn, ISearchOptionColumn {
+  /**
+   * @description 是否开启搜索
+   */
+  search?: boolean;
+  /**
+   * @description 搜索项是否开启插槽
+   */
+  searchSlot?: boolean;
+}
+
+/**
+ * @description crud配置
+ */
 export interface ICrudOption extends ITableOption {
-  // 是否有操作栏
+  /**
+   * @description 是否有操作栏
+   */
   menu?: boolean;
-  // 操作栏宽度
+  /**
+   * @description 操作栏宽度
+   */
   menuWidth?: number;
-  // 操作栏标题
+  /**
+   * @description 操作栏标题
+   */
   menuTitle?: string;
-  // 操作栏列冻结列 (true/left/right)
+  /**
+   * @description 操作栏列冻结列 (true/left/right)
+   */
   menuFixed?: boolean | string;
-  // 操作栏编辑按钮
+  /**
+   * @description 操作栏编辑按钮
+   */
   editBtn?: boolean;
-  // 操作栏修改按钮文案
+  /**
+   * @description 操作栏修改按钮文案
+   */
   editBtnText?: string;
-  // 操作栏修改按钮图标
+  /**
+   * @description 操作栏修改按钮图标
+   */
   editBtnIcon?: string;
-  // 操作栏删除按钮
+  /**
+   * @description 操作栏删除按钮
+   */
   delBtn?: boolean;
-  // 操作栏删除按钮文字
+  /**
+   * @description 操作栏删除按钮文字
+   */
   delBtnText?: string;
-  // 操作栏删除按钮图标
+  /**
+   * @description 操作栏删除按钮图标
+   */
   delBtnIcon?: string;
-  // 操作栏查看按钮
+  /**
+   * @description 操作栏查看按钮
+   */
   viewBtn?: boolean;
-  // 操作栏查看按钮文字
+  /**
+   * @description 操作栏查看按钮文字
+   */
   viewBtnText?: string;
-  // 操作栏查看按钮图标
+  /**
+   * @description 操作栏查看按钮图标
+   */
   viewBtnIcon?: string;
+  /**
+   * @description crud列配置
+   */
+  column: ICrudOptionColumn[]
 }
 
 export const crudProps = buildProps({

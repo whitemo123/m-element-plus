@@ -20,6 +20,14 @@ export interface ISearchOptionColumn extends ICommonColumn {
    * @description 栅栏宽度
    */
   span?: number;
+  /**
+   * @description 是否开启插槽
+   */
+  slot?: boolean;
+  /**
+   * @description 类型
+   */
+  type?: string;
 }
 
 /**
