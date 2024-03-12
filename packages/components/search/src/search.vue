@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue' 
-import { ISearchOption, searchProps } from './search';
+import { ISearchOption, ISearchOptionColumn, searchProps } from './search';
 
 defineOptions({
   name: "MSearch"
@@ -18,6 +18,20 @@ const searchOption = ref<ISearchOption>({
   column: []
 })
 
+// 搜索表单
+const searchForm = ref<any>({})
+
+/**
+ * @description 通过配置项获取搜索表单值
+ */
+const getFormByColumn = (column: ISearchOptionColumn[]) => {
+  const value = {}
+  for (let i = 0; i < column.length; i++) {
+    console.log(column[i])
+  }
+  return value
+}
+
 watch(() => props.option, (newVal: ISearchOption) => {
   // 更新配置项
   searchOption.value = Object.assign(defaultOption, newVal);
@@ -29,10 +43,14 @@ watch(() => props.option, (newVal: ISearchOption) => {
 
 <template>
   <div class="m-search-box">
-    <el-form :size="size" :inline="true">
+    <el-form :size="size" :inline="true" @submit.native.prevent>
       <el-row>
         <el-col v-for="(column, columnIndex) in searchOption.column" :key="columnIndex">
-          <template v-if="column.type === ''"></template>
+          <el-form-item :label="column.label + '：'" :prop="column.prop">
+            <template v-if="column.type === 'input'">
+                <el-input />
+            </template>
+          </el-form-item>
         </el-col>
       </el-row>
     </el-form>
