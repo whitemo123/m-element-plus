@@ -4,7 +4,7 @@ import { useSizeProp } from '@m-element-plus/hooks'
 
 import { isString } from "@m-element-plus/utils";
 
-import type { ICommonColumn, InputTypes, DateTypes } from "../../common/types";
+import type { ICommonColumn, ColumnType } from "../../common/types";
 
 /**
  * 默认排序
@@ -64,11 +64,15 @@ export interface ITableOptionColumn extends ICommonColumn {
   /**
    * @description 类型
    */
-  type?: InputTypes | DateTypes | 'select' | 'checkbox' | 'radio' | 'picture' | 'qrcode';
+  type?: ColumnType;
   /**
    * @description 帮助信息文字
    */
   help?: string;
+  /**
+   * @description 通用key
+   */
+  [key: string]: any;
 }
 
 

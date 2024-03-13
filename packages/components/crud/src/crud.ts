@@ -2,7 +2,7 @@ import { buildProps, definePropType, isNumber } from "@m-element-plus/utils";
 import { useSizeProp } from '@m-element-plus/hooks'
 
 import type { ITableDefaultSort, ITableOption, ITableOptionColumn } from "@m-element-plus/components/table";
-import { ISearchOptionColumn } from "@m-element-plus/components/search";
+import { ISearchOption, ISearchOptionColumn } from "@m-element-plus/components/search";
 
 // 分页参数
 export interface ICrudPage {
@@ -29,12 +29,24 @@ export interface ICrudOptionColumn extends ITableOptionColumn, ISearchOptionColu
    * @description 搜索项是否开启插槽
    */
   searchSlot?: boolean;
+  /**
+   * @description 搜索输入框最大输入长度
+   */
+  searchMaxLength?: number;
+  /**
+   * @description 搜索默认值
+   */
+  searchValue?: any;
+  /**
+   * @description 输入框占位文本
+   */
+  searchPlaceholder?: string;
 }
 
 /**
  * @description crud配置
  */
-export interface ICrudOption extends ITableOption {
+export interface ICrudOption extends ITableOption, ISearchOption {
   /**
    * @description 是否有操作栏
    */
@@ -150,7 +162,7 @@ export const crudEmits = {
    * @param form 搜索表单
    * @returns 
    */
-  search: (form: any) => true,
+  search: (form: any, done: Function) => true,
   /**
    * @description 重置
    * @returns 

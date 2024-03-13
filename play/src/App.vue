@@ -13,6 +13,8 @@ const total = ref(10)
 const tableLoading = ref(false)
 
 const tableOption: ICrudOption = {
+  col: true,
+  colIndex: 2,
   column: [
     {
       label: '测试',
@@ -22,7 +24,8 @@ const tableOption: ICrudOption = {
       type: 'input',
       help: '我是帮助信息',
       search: true,
-      searchSlot: true
+      searchSlot: true,
+      searchValue: '2'
     },
     {
       label: 'ID',
@@ -39,6 +42,7 @@ const tableOption: ICrudOption = {
       prop: "status",
       type: "checkbox",
       align: "center",
+      search: true,
       dicData: [
         {
           label: "启用",
@@ -61,6 +65,14 @@ const tableOption: ICrudOption = {
       prop: "qrcode1",
       type: "qrcode",
       align: "center"
+    },
+    {
+      label: "time",
+      prop: "time",
+      align: "center",
+      type: "year",
+      search: true,
+      searchPlaceholder: '请选择年'
     }
   ]
 }
@@ -72,21 +84,24 @@ const tableData = ref<any>([
     slot1: 'slot1',
     status: 1,
     pic: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
-    qrcode1: '1'
+    qrcode1: '1',
+    time: '2023'
   },
   {
     id: 2,
     test: '测试2',
     slot1: 'slot1',
     status: 2,
-    qrcode1: 'sasasaasaa'
+    qrcode1: 'sasasaasaa',
+    time: '2024'
   },
   {
     id: 3,
     test: '测试3',
     slot1: 'slot1',
     status: '1,2',
-    qrcode1: 'sa121saa212aa21asa21'
+    qrcode1: 'sa121saa212aa21asa21',
+    time: '2021'
   },
 ])
 
@@ -103,7 +118,7 @@ const selects = ref<any>([])
       :option="tableOption"
     >
       <template v-slot:slot1="{row, $index}">
-        <span>{{ row }} {{ $index }}</span>
+        <span>我是插槽{{ $index }}</span>
       </template>
       <template v-slot:testSearch>
         <input />

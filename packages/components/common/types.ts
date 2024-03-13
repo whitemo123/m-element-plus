@@ -20,7 +20,12 @@ export type InputTypes = 'input' | 'number' | 'textarea'
 /**
  * @description 时间类型
  */
-export type DateTypes = 'year' | 'month' | 'date' | 'dates' | 'datetime' | 'week' | 'datetimerange' | 'daterange' | 'monthrange' | 'time'
+export type DateTypes = 'year' | 'month' | 'date' | 'datetime' | 'week' | 'datetimerange' | 'daterange' | 'monthrange' | 'time'
+
+/**
+ * @description column类型
+ */
+export type ColumnType = InputTypes | DateTypes | 'select' | 'checkbox' | 'radio' | 'picture' | 'qrcode'
 
 /**
  * @description 通用字典内容

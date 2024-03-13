@@ -26,6 +26,11 @@ const tableOption = ref<ITableOption>({
 })
 
 /**
+ * @description 搜索表单数据
+ */
+const searchForm = ref<any>({})
+
+/**
  * @description 表格已经开启插槽columns
  */
 const tableSlotColumns = computed(() => tableOption.value.column.filter(item => item.slot))
@@ -42,12 +47,19 @@ const tableSlotColumns = computed(() => tableOption.value.column.filter(item => 
   // 搜索-columns
   const columns: ISearchOptionColumn[] = []
   for (let i = 0; i < crudColumns.length; i++) {
-    const columnItem = crudColumns[i]
+    const columnItem: ICrudOptionColumn = crudColumns[i]
     // 是否开启搜素
     if (columnItem.search) {
       columns.push({
         ...columnItem,
-        slot: columnItem.searchSlot
+        // 插槽
+        slot: columnItem.searchSlot,
+        // 搜索默认参数
+        value: columnItem.searchValue,
+        // 搜索输入框最大长度
+        maxlength: columnItem.searchMaxLength,
+        // 搜索输入框占位符
+        placeholder: columnItem.searchPlaceholder,
       })
     }
   }
@@ -98,9 +110,25 @@ const pageSizeChange = (pageSize: number) => {
 }
 
 /**
+ * @description 搜索事件
+ * @param form 搜索表单值
+ * @param done 完成回调
+ */
+const search = (form: any, done: Function) => {
+  emits('search', form, done)
+}
+
+/**
+ * @description 重置搜索
+ */
+const reset = () => {
+  emits('reset')
+}
+
+/**
  * @description 监听配置项的实时变化
  */
- watch(() => props.option, (newVal: ICrudOption) => {
+ watch(() => props.option as ICrudOption, (newVal: ICrudOption) => {
   // 更新搜索配置
   searchOption.value.column = getSearchOption(newVal.column)
   // 更新表格配置
@@ -115,6 +143,9 @@ const pageSizeChange = (pageSize: number) => {
   <div class="m-crud">
     <m-search
       :option="searchOption"
+      v-model="searchForm"
+      @search="search"
+      @reset="reset"
     >
     </m-search>
     <m-table
@@ -123,8 +154,8 @@ const pageSizeChange = (pageSize: number) => {
       :option="tableOption"
     > 
       <!--动态创建列表的插槽，并传递row,$index-->
-      <template v-for="item in tableSlotColumns" v-slot:[item.prop]="scope">
-        <slot :key="item.prop" :name="item.prop" v-bind="scope"  />
+      <template v-for="(item, index) in tableSlotColumns" :key="index" v-slot:[item.prop]="scope">
+        <slot :name="item.prop" v-bind="scope"  />
       </template>
     </m-table>
     <div

@@ -1,5 +1,5 @@
-import { buildProps, definePropType } from "@m-element-plus/utils";
-import { ICommonColumn } from "@m-element-plus/components/common/types";
+import { buildProps, definePropType, isObject } from "@m-element-plus/utils";
+import { ColumnType, ICommonColumn } from "@m-element-plus/components/common/types";
 import { useSizeProp } from "@m-element-plus/hooks";
 import { FormItemRule } from "element-plus";
 
@@ -27,7 +27,23 @@ export interface ISearchOptionColumn extends ICommonColumn {
   /**
    * @description 类型
    */
-  type?: string;
+  type?: ColumnType;
+  /**
+   * @description 最大长度
+   */
+  maxlength?: number;
+  /**
+   * @description 搜索默认值
+   */
+  value?: any;
+  /**
+   * @description 输入框占位文本
+   */
+  placeholder?: string;
+  /**
+   * @description 通用key
+   */
+  [key: string]: any;
 }
 
 /**
@@ -82,9 +98,31 @@ export const searchProps = buildProps({
   option: {
     type: definePropType<ISearchOption>(Object),
     required: true
+  },
+  /**
+   * @description 搜索表单绑定的值
+   */
+  modelValue: {
+    type: Object,
+    required: true
   }
 })
 
+/**
+ * @description 组件emits
+ */
 export const searchEmits = {
-  
+  ['update:modelValue']: (data: any) => isObject(data),
+  /**
+   * @description 搜索
+   * @param form 搜索表单
+   * @param done 完成
+   * @returns 
+   */
+  search: (form: any, done: Function) => true,
+  /**
+   * 重置
+   * @returns 
+   */
+  reset: () => true,
 }
