@@ -140,6 +140,17 @@ export const tableProps = buildProps({
     required: true
   },
   /**
+   * @description 权限对象数据
+   */
+  permission: {
+    type: Object,
+    default: {
+      addBtn: true,
+      editBtn: true,
+      delBtn: true
+    }
+  },
+  /**
    * @description 表格配置
    */
   option: {

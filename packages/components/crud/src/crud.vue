@@ -28,13 +28,24 @@ const tableOption = ref<ITableOption>({
 /**
  * @description 搜索表单数据
  */
-const searchForm = ref<any>({})
+const searchForm = computed({
+  get() {
+    return props.search
+  },
+  set(value: any) {
+    emits('update:search', value)
+  }
+})
 
 /**
  * @description 表格已经开启插槽columns
  */
 const tableSlotColumns = computed(() => tableOption.value.column.filter(item => item.slot))
 
+/**
+ * @description 搜索已经开启插槽的columns
+ */
+const searchSlotColumns = computed(() => searchOption.value.column.filter(item => item.slot))
 
 /**
  * @description 获取搜索表单的配置项
@@ -93,20 +104,14 @@ const tableSlotColumns = computed(() => tableOption.value.column.filter(item => 
  * @description 当前页发生改变
  */
 const currentPageChange = (page: number) => {
-  emits('update:page', {
-    page: page,
-    limit: props.page['limit']
-  })
+  searchForm.value.page = page
 }
 
 /**
  * @description 页大小发生变化
  */
 const pageSizeChange = (pageSize: number) => {
-  emits('update:page', {
-    page: props.page['page'],
-    limit: pageSize
-  })
+  searchForm.value.limit = pageSize
 }
 
 /**
@@ -114,14 +119,14 @@ const pageSizeChange = (pageSize: number) => {
  * @param form 搜索表单值
  * @param done 完成回调
  */
-const search = (form: any, done: Function) => {
+const handleSearch = (form: any, done: Function) => {
   emits('search', form, done)
 }
 
 /**
  * @description 重置搜索
  */
-const reset = () => {
+const handleReset = () => {
   emits('reset')
 }
 
@@ -130,9 +135,15 @@ const reset = () => {
  */
  watch(() => props.option as ICrudOption, (newVal: ICrudOption) => {
   // 更新搜索配置
-  searchOption.value.column = getSearchOption(newVal.column)
+  searchOption.value = {
+    ...newVal,
+    column: getSearchOption(newVal.column)
+  }
   // 更新表格配置
-  tableOption.value.column = getTableOption(newVal.column)
+  tableOption.value = {
+    ...newVal,
+    column: getTableOption(newVal.column)
+  }
 }, {
   immediate: true,
   deep: true
@@ -141,16 +152,23 @@ const reset = () => {
 
 <template>
   <div class="m-crud">
+    <!--搜索区域-->
     <m-search
       :option="searchOption"
       v-model="searchForm"
-      @search="search"
-      @reset="reset"
+      :permission="permission"
+      @search="handleSearch"
+      @reset="handleReset"
     >
+      <template v-for="(item, index) in searchSlotColumns" :key="index" v-slot:[item.prop]="scope">
+        <slot :name="item.prop + 'Search'" v-bind="scope" />
+      </template>
     </m-search>
+    <!--表格-->
     <m-table
       :data="data"
       :size="size"
+      :permission="permission"
       :option="tableOption"
     > 
       <!--动态创建列表的插槽，并传递row,$index-->
@@ -158,15 +176,16 @@ const reset = () => {
         <slot :name="item.prop" v-bind="scope"  />
       </template>
     </m-table>
+    <!--分页区域-->
     <div
       class="m-pagination-box"
-      v-if="total"
+      v-if="searchForm.page && total"
     >
       <m-pagination
         :small="size === 'small'"
         :total="total"
-        :current-page="page.page"
-        :page-size="page.limit"
+        :current-page="searchForm.page"
+        :page-size="searchForm.limit"
         :disabled="loading"
         @currentPage="currentPageChange"
         @pageSize="pageSizeChange"

@@ -111,21 +111,17 @@ export const crudProps = buildProps({
    */
   size: useSizeProp,
   /**
-   * @description 分页参数
-   */
-  page: {
-    type: definePropType<ICrudPage>(Object),
-    default: {
-      page: 1,
-      limit: 10
-    }
-  },
-  /**
    * @description 数据总数
    */
   total: {
     type: Number,
     default: 0
+  },
+  /**
+   * @description 搜索表单数据
+   */
+  search: {
+    type: Object,
   },
   /**
    * @description 表格数据
@@ -140,6 +136,17 @@ export const crudProps = buildProps({
   loading: {
     type: Boolean,
     default: false
+  },
+  /**
+   * @description 权限对象数据
+   */
+  permission: {
+    type: Object,
+    default: {
+      addBtn: true,
+      editBtn: true,
+      delBtn: true
+    }
   },
   /**
    * @description 表格配置
@@ -157,6 +164,12 @@ export const crudEmits = {
    * @returns 
    */
   ['update:page']: (page: ICrudPage) => isNumber(page.page) && isNumber(page.limit),
+  /**
+   * @description 更新search绑定的值
+   * @param value 搜索表单参数
+   * @returns 
+   */
+  ['update:search']: (value: any) => true,
   /**
    * @description 搜索
    * @param form 搜索表单

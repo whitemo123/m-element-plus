@@ -45,8 +45,18 @@ const tableOption = ref<ITableOption>({
   column: []
 })
 
+// 表格列配置
 const tableColumn = computed<ITableOptionColumn[]>(() => {
-  return tableOption.value.column.filter(item => !item.hide)
+  const result: ITableOptionColumn[] = []
+  const columns = props.option?.column || []
+  for (let i = 0; i < columns.length; i++) {
+    if (!columns[i].hide && props.permission[columns[i].prop] !== false) {
+      result.push({
+        ...columns[i]
+      })
+    }
+  }
+  return result
 })
 
 // 当前表格单选值

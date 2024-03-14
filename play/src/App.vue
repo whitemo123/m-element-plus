@@ -13,7 +13,7 @@ const total = ref(10)
 const tableLoading = ref(false)
 
 const tableOption: ICrudOption = {
-  col: true,
+  col: false,
   colIndex: 2,
   column: [
     {
@@ -24,17 +24,19 @@ const tableOption: ICrudOption = {
       type: 'input',
       help: '我是帮助信息',
       search: true,
-      searchSlot: true,
+      searchSlot: false,
       searchValue: '2'
     },
     {
       label: 'ID',
       prop: 'id',
+      align: 'center'
     },
     {
       label: '插槽',
       prop: 'slot1',
       slot: true,
+      align: 'center',
       dicFormatter: (res) => ({list: res.data, label: 'name', value: 'id'})
     },
     {
@@ -111,17 +113,17 @@ const selects = ref<any>([])
 <template>
   <div>
     <MCrud
-      v-model:page="query"
+      v-model:search="query"
       :loading="tableLoading"
       :data="tableData"
       :total="total"
       :option="tableOption"
     >
       <template v-slot:slot1="{row, $index}">
-        <span>我是插槽{{ $index }}</span>
+        <span>{{ row.slot1 }}</span>
       </template>
-      <template v-slot:testSearch>
-        <input />
+      <template v-slot:testSearch="{ $query }">
+        <input v-model="$query.test" />
       </template>
     </MCrud>
   </div>

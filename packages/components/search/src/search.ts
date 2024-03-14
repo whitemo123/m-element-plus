@@ -100,6 +100,17 @@ export const searchProps = buildProps({
     required: true
   },
   /**
+   * @description 权限对象数据
+   */
+  permission: {
+    type: Object,
+    default: {
+      addBtn: true,
+      editBtn: true,
+      delBtn: true
+    }
+  },
+  /**
    * @description 搜索表单绑定的值
    */
   modelValue: {
