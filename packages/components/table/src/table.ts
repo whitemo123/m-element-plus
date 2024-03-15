@@ -78,6 +78,58 @@ export interface ITableOptionColumn extends ICommonColumn {
 
 export interface ITableOption {
   /**
+   * @description 是否有操作栏
+   */
+  menu?: boolean;
+  /**
+   * @description 操作栏宽度
+   */
+  menuWidth?: number;
+  /**
+   * @description 操作栏标题
+   */
+  menuTitle?: string;
+  /**
+   * @description 操作栏列冻结列 (true/left/right)
+   */
+  menuFixed?: boolean | string;
+  /**
+   * @description 操作栏编辑按钮
+   */
+  editBtn?: boolean;
+  /**
+   * @description 操作栏修改按钮文案
+   */
+  editBtnText?: string;
+  /**
+   * @description 操作栏修改按钮图标
+   */
+  editBtnIcon?: string;
+  /**
+   * @description 操作栏删除按钮
+   */
+  delBtn?: boolean;
+  /**
+   * @description 操作栏删除按钮文字
+   */
+  delBtnText?: string;
+  /**
+   * @description 操作栏删除按钮图标
+   */
+  delBtnIcon?: string;
+  /**
+   * @description 操作栏查看按钮
+   */
+  viewBtn?: boolean;
+  /**
+   * @description 操作栏查看按钮文字
+   */
+  viewBtnText?: string;
+  /**
+   * @description 操作栏查看按钮图标
+   */
+  viewBtnIcon?: string;
+  /**
    * @description 斑马纹
    */
   stripe?: boolean;
@@ -138,6 +190,13 @@ export const tableProps = buildProps({
   data: {
     type: Array,
     required: true
+  },
+  /**
+   * @description 加载状态
+   */
+  loading: {
+    type: Boolean,
+    default: false
   },
   /**
    * @description 权限对象数据

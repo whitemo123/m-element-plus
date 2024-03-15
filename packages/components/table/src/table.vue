@@ -212,6 +212,7 @@ onMounted(() => {
       ref="tableRef"
       :data="data"
       :size="size"
+      v-loading="loading"
       :stripe="tableOption.stripe"
       :border="tableOption.border"
       :rowKey="tableOption.rowKey"

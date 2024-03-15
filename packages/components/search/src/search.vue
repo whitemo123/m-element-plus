@@ -28,9 +28,6 @@ const searchForm = computed({
 // 折叠搜索
 const searchCol = ref(true)
 
-// 搜索loading
-const searchLoading = ref(false)
-
 // 默认配置
 const defaultOption: ISearchOption = {
   // 默认label宽度
@@ -111,21 +108,15 @@ const toggleCol = () => {
 /**
  * @description 搜索
  */
-const handleSearch = () => {
+const search = (p: number = 1) => {
   searchRef.value?.validate(valid => {
     if (valid) {
       // 搜索自动使用第一页进行搜索
       if (searchForm.value.page) {
-        searchForm.value.page = 1;
-      }
-      // 开启搜索加载
-      searchLoading.value = true
-      // 搜索完成回调
-      const done = () => {
-        searchLoading.value = false
+        searchForm.value.page = p;
       }
       // emit搜索事件 如果非第一页，自动重置第一页
-      emits('search', searchForm.value, done)
+      emits('search', searchForm.value)
     }
   })
 }
@@ -133,7 +124,7 @@ const handleSearch = () => {
 /**
  * @description 重置
  */
-const handleReset = () => {
+const reset = () => {
   // 重置分页参数
   if (searchForm.value.page) {
     searchForm.value.page = 1;
@@ -152,13 +143,18 @@ searchOption.value = Object.assign(defaultOption, props.option);
 
 // 第一次加载组件先初始化form表单对象的字段默认值
 searchForm.value = getFormByColumn(searchOptionColumns.value as ISearchOptionColumn[])
+
+defineExpose({
+  search,
+  reset
+})
 </script>
 
 <template>
   <div class="m-search-box">
     <el-form
       ref="searchRef"
-      :disabled="searchLoading"
+      :disabled="loading"
       :size="size"
       :inline="true"
       :label-width="searchOption.labelWidth"
@@ -221,18 +217,18 @@ searchForm.value = getFormByColumn(searchOptionColumns.value as ISearchOptionCol
         <el-col :span="6">
           <el-form-item class="m-search-btns" style="width: 100%;">
             <el-button
-              @click="handleSearch"
+              @click="search(1)"
               type="primary"
               :icon="searchOption.searchBtnIcon"
-              :loading="searchLoading"
+              :loading="loading"
             >
               {{ searchOption.searchBtnText }}
             </el-button>
             <el-button
-              @click="handleReset"
+              @click="reset"
               type="default"
               :icon="searchOption.resetBtnIcon"
-              :loading="searchLoading"
+              :loading="loading"
             >
               {{ searchOption.resetBtnText }}
             </el-button>
@@ -240,6 +236,7 @@ searchForm.value = getFormByColumn(searchOptionColumns.value as ISearchOptionCol
               v-if="searchOption.col"
               style="width: 54px"
               :underline="false"
+              :disabled="loading"
               :icon="searchCol ? 'ArrowDown' : 'ArrowUp'"
               @click="toggleCol"
             >

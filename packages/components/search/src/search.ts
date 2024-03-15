@@ -100,6 +100,13 @@ export const searchProps = buildProps({
     required: true
   },
   /**
+   * @description 搜索加载状态
+   */
+  loading: {
+    type: Boolean,
+    default: false
+  },
+  /**
    * @description 权限对象数据
    */
   permission: {
@@ -130,7 +137,7 @@ export const searchEmits = {
    * @param done 完成
    * @returns 
    */
-  search: (form: any, done: Function) => true,
+  search: (form: any) => true,
   /**
    * 重置
    * @returns 

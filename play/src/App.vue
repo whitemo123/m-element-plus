@@ -8,13 +8,15 @@ const query = ref<ICrudPage>({
   limit: 10
 })
 
-const total = ref(10)
+const total = ref(100)
 
-const tableLoading = ref(false)
+const loading = ref(false)
 
 const tableOption: ICrudOption = {
   col: false,
   colIndex: 2,
+  border: true,
+  addBtn: false,
   column: [
     {
       label: '测试',
@@ -56,18 +58,18 @@ const tableOption: ICrudOption = {
         },
       ]
     },
-    {
-      label: "图片",
-      prop: "pic",
-      type: 'picture',
-      align: 'center'
-    },
-    {
-      label: "qrcode1",
-      prop: "qrcode1",
-      type: "qrcode",
-      align: "center"
-    },
+    // {
+    //   label: "图片",
+    //   prop: "pic",
+    //   type: 'picture',
+    //   align: 'center'
+    // },
+    // {
+    //   label: "qrcode1",
+    //   prop: "qrcode1",
+    //   type: "qrcode",
+    //   align: "center"
+    // },
     {
       label: "time",
       prop: "time",
@@ -114,7 +116,8 @@ const selects = ref<any>([])
   <div>
     <MCrud
       v-model:search="query"
-      :loading="tableLoading"
+      v-model:select="selects"
+      :loading="loading"
       :data="tableData"
       :total="total"
       :option="tableOption"

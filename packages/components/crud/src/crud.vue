@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { MPagination, MTable, MSearch, ISearchOption, ITableOption, ISearchOptionColumn, ITableOptionColumn } from "@m-element-plus/components";
+import { computed, ref, watch, useSlots } from 'vue'
+import { MPagination, MTable, MSearch, ISearchOption, ITableOption, ISearchOptionColumn, ITableOptionColumn, SearchInstance } from "@m-element-plus/components";
 import { crudProps, crudEmits, ICrudOption, ICrudOptionColumn } from './crud';
 
 defineOptions({
@@ -10,6 +10,18 @@ defineOptions({
 const props = defineProps(crudProps)
 
 const emits = defineEmits(crudEmits)
+
+const slots = useSlots()
+
+// 搜索ref
+const mSearchRef = ref<SearchInstance>()
+
+/**
+ * @description crud配置
+ */
+const crudOption = ref<ICrudOption>({
+  column: []
+})
 
 /**
  * @description 搜索配置
@@ -34,6 +46,18 @@ const searchForm = computed({
   },
   set(value: any) {
     emits('update:search', value)
+  }
+})
+
+/**
+ * @description 选择的数据
+ */
+const selectData = computed({
+  get() {
+    return props.select
+  },
+  set(value: any) {
+    emits('update:select', value)
   }
 })
 
@@ -82,7 +106,7 @@ const searchSlotColumns = computed(() => searchOption.value.column.filter(item =
  * @description 获取列表的配置项
  * @param { ICrudOption } crudOption crud配置项
  */
- const getTableOption = (crudColumns: ICrudOptionColumn[]): ITableOptionColumn[] => {
+ const getTableOptionColumn = (crudColumns: ICrudOptionColumn[]): ITableOptionColumn[] => {
   if (!crudColumns || !crudColumns.length) {
     return []
   }
@@ -104,7 +128,7 @@ const searchSlotColumns = computed(() => searchOption.value.column.filter(item =
  * @description 当前页发生改变
  */
 const currentPageChange = (page: number) => {
-  searchForm.value.page = page
+  mSearchRef.value?.search(page)
 }
 
 /**
@@ -112,6 +136,7 @@ const currentPageChange = (page: number) => {
  */
 const pageSizeChange = (pageSize: number) => {
   searchForm.value.limit = pageSize
+  mSearchRef.value?.search()
 }
 
 /**
@@ -119,8 +144,8 @@ const pageSizeChange = (pageSize: number) => {
  * @param form 搜索表单值
  * @param done 完成回调
  */
-const handleSearch = (form: any, done: Function) => {
-  emits('search', form, done)
+const handleSearch = (form: any) => {
+  emits('search', form)
 }
 
 /**
@@ -130,20 +155,38 @@ const handleReset = () => {
   emits('reset')
 }
 
+
+/**
+ * @description 监听配置项的列变化
+ */
+watch(() => props.option.column, (newVal: ICrudOptionColumn[]) => {
+  console.log(newVal)
+}, {
+  immediate: true,
+  deep: true
+})
+
 /**
  * @description 监听配置项的实时变化
  */
  watch(() => props.option as ICrudOption, (newVal: ICrudOption) => {
+  // 获取配置信息
+  crudOption.value = {
+    ...newVal,
+    addBtn: newVal.addBtn === undefined ? true : newVal.addBtn,
+    addBtnIcon: 'Plus',
+    addBtnText: '新 增'
+  }
   // 更新搜索配置
-  searchOption.value = {
-    ...newVal,
-    column: getSearchOption(newVal.column)
-  }
-  // 更新表格配置
-  tableOption.value = {
-    ...newVal,
-    column: getTableOption(newVal.column)
-  }
+  // searchOption.value = {
+  //   ...newVal,
+  //   column: getSearchOption(newVal.column)
+  // }
+  // // 更新表格配置
+  // tableOption.value = {
+  //   ...newVal,
+  //   column: getTableOption(newVal.column)
+  // }
 }, {
   immediate: true,
   deep: true
@@ -156,6 +199,9 @@ const handleReset = () => {
     <m-search
       :option="searchOption"
       v-model="searchForm"
+      ref="mSearchRef"
+      :size="size"
+      :loading="loading"
       :permission="permission"
       @search="handleSearch"
       @reset="handleReset"
@@ -164,19 +210,26 @@ const handleReset = () => {
         <slot :name="item.prop + 'Search'" v-bind="scope" />
       </template>
     </m-search>
+    <!--新增区域-->
+    <div v-if="crudOption.addBtn || slots.topLeft" class="m-search-top">
+      <el-button v-if="crudOption.addBtn" :size="size" type="primary" :icon="crudOption.addBtnIcon">{{ crudOption.addBtnText }}</el-button>
+      <slot name="topLeft" />
+    </div>
     <!--表格-->
-    <m-table
+    <!-- <m-table
       :data="data"
       :size="size"
+      :loading="loading"
       :permission="permission"
       :option="tableOption"
+      v-model:select="selectData"
     > 
-      <!--动态创建列表的插槽，并传递row,$index-->
+      <!==动态创建列表的插槽，并传递row,$index==>
       <template v-for="(item, index) in tableSlotColumns" :key="index" v-slot:[item.prop]="scope">
         <slot :name="item.prop" v-bind="scope"  />
       </template>
     </m-table>
-    <!--分页区域-->
+    <!==分页区域==>
     <div
       class="m-pagination-box"
       v-if="searchForm.page && total"
@@ -190,6 +243,6 @@ const handleReset = () => {
         @currentPage="currentPageChange"
         @pageSize="pageSizeChange"
       />
-    </div>
+    </div> -->
   </div>
 </template>

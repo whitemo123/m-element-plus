@@ -48,57 +48,17 @@ export interface ICrudOptionColumn extends ITableOptionColumn, ISearchOptionColu
  */
 export interface ICrudOption extends ITableOption, ISearchOption {
   /**
-   * @description 是否有操作栏
+   * @description 新增按钮是否显示
    */
-  menu?: boolean;
+  addBtn?: boolean;
   /**
-   * @description 操作栏宽度
+   * @description 新增按钮文字
    */
-  menuWidth?: number;
+  addBtnText?: boolean;
   /**
-   * @description 操作栏标题
+   * @description 新增按钮图标
    */
-  menuTitle?: string;
-  /**
-   * @description 操作栏列冻结列 (true/left/right)
-   */
-  menuFixed?: boolean | string;
-  /**
-   * @description 操作栏编辑按钮
-   */
-  editBtn?: boolean;
-  /**
-   * @description 操作栏修改按钮文案
-   */
-  editBtnText?: string;
-  /**
-   * @description 操作栏修改按钮图标
-   */
-  editBtnIcon?: string;
-  /**
-   * @description 操作栏删除按钮
-   */
-  delBtn?: boolean;
-  /**
-   * @description 操作栏删除按钮文字
-   */
-  delBtnText?: string;
-  /**
-   * @description 操作栏删除按钮图标
-   */
-  delBtnIcon?: string;
-  /**
-   * @description 操作栏查看按钮
-   */
-  viewBtn?: boolean;
-  /**
-   * @description 操作栏查看按钮文字
-   */
-  viewBtnText?: string;
-  /**
-   * @description 操作栏查看按钮图标
-   */
-  viewBtnIcon?: string;
+  addBtnIcon?: boolean;
   /**
    * @description crud列配置
    */
@@ -138,6 +98,13 @@ export const crudProps = buildProps({
     default: false
   },
   /**
+   * @description 选择的数据
+   */
+  select: {
+    type: Array,
+    default: () => []
+  },
+  /**
    * @description 权限对象数据
    */
   permission: {
@@ -171,11 +138,17 @@ export const crudEmits = {
    */
   ['update:search']: (value: any) => true,
   /**
+   * 更新select数据
+   * @param {any} arr 数据 
+   * @returns 更新select数据
+   */
+  ['update:select']: (arr: any) => true, 
+  /**
    * @description 搜索
    * @param form 搜索表单
    * @returns 
    */
-  search: (form: any, done: Function) => true,
+  search: (form: any) => true,
   /**
    * @description 重置
    * @returns 
