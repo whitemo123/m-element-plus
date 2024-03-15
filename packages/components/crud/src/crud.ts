@@ -54,11 +54,11 @@ export interface ICrudOption extends ITableOption, ISearchOption {
   /**
    * @description 新增按钮文字
    */
-  addBtnText?: boolean;
+  addBtnText?: string;
   /**
    * @description 新增按钮图标
    */
-  addBtnIcon?: boolean;
+  addBtnIcon?: string;
   /**
    * @description crud列配置
    */

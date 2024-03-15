@@ -19,22 +19,67 @@ const mSearchRef = ref<SearchInstance>()
 /**
  * @description crud配置
  */
-const crudOption = ref<ICrudOption>({
-  column: []
+const crudOption = computed<ICrudOption>(() => {
+  // 设置crud默认值
+  const option: ICrudOption = {
+    ...props.option,
+    addBtn: props.option?.addBtn === undefined ? true : props.option.addBtn,
+    addBtnIcon: 'Plus',
+    addBtnText: '新 增',
+    column: props.option!.column
+  }
+  return option
 })
 
 /**
- * @description 搜索配置
+ * @description 搜索列
  */
-const searchOption = ref<ISearchOption>({
-  column: []
+const searchOption = computed<ISearchOption>(() => {
+  const columns: ISearchOptionColumn[] = []
+  for (let i = 0; i < crudOption.value.column.length; i++) {
+    const columnItem: ICrudOptionColumn = crudOption.value.column[i]
+    // 是否开启搜素
+    if (columnItem.search) {
+      columns.push({
+        ...columnItem,
+        // 插槽
+        slot: columnItem.searchSlot,
+        // 搜索默认参数
+        value: columnItem.searchValue,
+        // 搜索输入框最大长度
+        maxlength: columnItem.searchMaxLength,
+        // 搜索输入框占位符
+        placeholder: columnItem.searchPlaceholder,
+      })
+    }
+  }
+  const option: ISearchOption = {
+    ...crudOption.value,
+    column: columns
+  }
+  return option
 })
 
+
 /**
- * @description 表格配置
+ * @description 表格列
  */
-const tableOption = ref<ITableOption>({
-  column: []
+const tableOption = computed<ITableOption>(() => {
+  const columns: ITableOptionColumn[] = []
+  for (let i = 0; i < crudOption.value.column.length; i++) {
+    const columnItem = crudOption.value.column[i]
+    // 没有隐藏列表
+    if (!columnItem.hide) {
+      columns.push({
+        ...columnItem
+      })
+    }
+  }
+  const option: ITableOption = {
+    ...crudOption.value,
+    column: columns
+  }
+  return option;
 })
 
 /**
@@ -72,59 +117,6 @@ const tableSlotColumns = computed(() => tableOption.value.column.filter(item => 
 const searchSlotColumns = computed(() => searchOption.value.column.filter(item => item.slot))
 
 /**
- * @description 获取搜索表单的配置项
- * @param { ICrudOption } crudOption crud配置项
- */
- const getSearchOption = (crudColumns: ICrudOptionColumn[]): ISearchOptionColumn[] => {
-  if (!crudColumns || !crudColumns.length) {
-    return []
-  }
-  // 搜索-columns
-  const columns: ISearchOptionColumn[] = []
-  for (let i = 0; i < crudColumns.length; i++) {
-    const columnItem: ICrudOptionColumn = crudColumns[i]
-    // 是否开启搜素
-    if (columnItem.search) {
-      columns.push({
-        ...columnItem,
-        // 插槽
-        slot: columnItem.searchSlot,
-        // 搜索默认参数
-        value: columnItem.searchValue,
-        // 搜索输入框最大长度
-        maxlength: columnItem.searchMaxLength,
-        // 搜索输入框占位符
-        placeholder: columnItem.searchPlaceholder,
-      })
-    }
-  }
-  return columns
-}
-
-
-/**
- * @description 获取列表的配置项
- * @param { ICrudOption } crudOption crud配置项
- */
- const getTableOptionColumn = (crudColumns: ICrudOptionColumn[]): ITableOptionColumn[] => {
-  if (!crudColumns || !crudColumns.length) {
-    return []
-  }
-  // 搜索-columns
-  const columns: ITableOptionColumn[] = []
-  for (let i = 0; i < crudColumns.length; i++) {
-    const columnItem = crudColumns[i]
-    // 没有隐藏列表
-    if (!columnItem.hide) {
-      columns.push({
-        ...columnItem
-      })
-    }
-  }
-  return columns
-}
-
-/**
  * @description 当前页发生改变
  */
 const currentPageChange = (page: number) => {
@@ -154,43 +146,6 @@ const handleSearch = (form: any) => {
 const handleReset = () => {
   emits('reset')
 }
-
-
-/**
- * @description 监听配置项的列变化
- */
-watch(() => props.option.column, (newVal: ICrudOptionColumn[]) => {
-  console.log(newVal)
-}, {
-  immediate: true,
-  deep: true
-})
-
-/**
- * @description 监听配置项的实时变化
- */
- watch(() => props.option as ICrudOption, (newVal: ICrudOption) => {
-  // 获取配置信息
-  crudOption.value = {
-    ...newVal,
-    addBtn: newVal.addBtn === undefined ? true : newVal.addBtn,
-    addBtnIcon: 'Plus',
-    addBtnText: '新 增'
-  }
-  // 更新搜索配置
-  // searchOption.value = {
-  //   ...newVal,
-  //   column: getSearchOption(newVal.column)
-  // }
-  // // 更新表格配置
-  // tableOption.value = {
-  //   ...newVal,
-  //   column: getTableOption(newVal.column)
-  // }
-}, {
-  immediate: true,
-  deep: true
-})
 </script>
 
 <template>
@@ -216,7 +171,7 @@ watch(() => props.option.column, (newVal: ICrudOptionColumn[]) => {
       <slot name="topLeft" />
     </div>
     <!--表格-->
-    <!-- <m-table
+    <m-table
       :data="data"
       :size="size"
       :loading="loading"
@@ -224,12 +179,12 @@ watch(() => props.option.column, (newVal: ICrudOptionColumn[]) => {
       :option="tableOption"
       v-model:select="selectData"
     > 
-      <!==动态创建列表的插槽，并传递row,$index==>
+      <!--动态创建列表的插槽，并传递row,$index-->
       <template v-for="(item, index) in tableSlotColumns" :key="index" v-slot:[item.prop]="scope">
         <slot :name="item.prop" v-bind="scope"  />
       </template>
     </m-table>
-    <!==分页区域==>
+    <!--分页区域-->
     <div
       class="m-pagination-box"
       v-if="searchForm.page && total"
@@ -243,6 +198,6 @@ watch(() => props.option.column, (newVal: ICrudOptionColumn[]) => {
         @currentPage="currentPageChange"
         @pageSize="pageSizeChange"
       />
-    </div> -->
+    </div>
   </div>
 </template>
