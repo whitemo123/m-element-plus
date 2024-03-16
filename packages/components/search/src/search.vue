@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue' 
+import { ref } from 'vue'
+import { get, set } from 'lodash-es';
 import { ISearchOption, ISearchOptionColumn, searchEmits, searchProps } from './search';
 import { isEmpty } from '@m-element-plus/components/common/utils';
 import { FormInstance } from 'element-plus';
@@ -8,20 +9,23 @@ defineOptions({
   name: "MSearch"
 })
 
+// props
 const props = defineProps(searchProps)
 
+// emits
 const emits = defineEmits(searchEmits)
 
 // 搜索ref
 const searchRef = ref<FormInstance>()
 
-// 搜索表单数据
-const searchForm = computed({
-  get() {
-    return props.modelValue;
+// 代理model
+const proxys: any = new Proxy(props.model as any, {
+  get(target, property) {
+    return get(target, property)
   },
-  set(value: any) {
-    emits('update:modelValue', value)
+  set(target, property, value) {
+    set(target, property, value)
+    return true;
   }
 })
 
@@ -51,10 +55,13 @@ const searchOption = ref<ISearchOption>({
   column: []
 })
 
-// 搜索列配置
-const searchOptionColumns = computed(() => {
+/**
+ * @description 获取搜索列
+ * @param { ISearchOptionColumn[] } arr 搜索列
+ */
+const getSearchColumns = (arr: ISearchOptionColumn[]) => {
   const result: ISearchOptionColumn[] = []
-  const columns = props.option?.column || []
+  const columns = arr || []
   for (let i = 0; i < columns.length; i++) {
     if (props.permission[columns[i].prop] !== false || props.permission[columns[i].prop + 'Search'] === true) {
       result.push({
@@ -67,36 +74,27 @@ const searchOptionColumns = computed(() => {
     }
   }
   return result
-})
+}
 
 /**
  * @description 通过配置项获取搜索表单值
  */
-const getFormByColumn = (column: ISearchOptionColumn[]) => {
-  const value = {}
+const setFormByColumn = (column: ISearchOptionColumn[]) => {
   for (let i = 0; i < column.length; i++) {
     const columnItem = column[i]
-    if (isEmpty(searchForm.value![columnItem.prop])) {
+    if (isEmpty(proxys[columnItem.prop])) {
       // 日期范围，下拉框多选数据为数组
       if (columnItem.type === 'datetimerange' || columnItem.type === 'monthrange' || (columnItem.type === 'select' && columnItem.multiple)) {
-        value[columnItem.prop] = isEmpty(columnItem.value) ? [] : columnItem.value
+        proxys[columnItem.prop] = isEmpty(columnItem.value) ? [] : columnItem.value
       } else {
         // 其他类型全部传空字符
-        value[columnItem.prop] = isEmpty(columnItem.value) ? '' : columnItem.value
+        proxys[columnItem.prop] = isEmpty(columnItem.value) ? '' : columnItem.value
       }
     } else {
-      value[columnItem.prop] = searchForm.value![columnItem.prop]
+      proxys[columnItem.prop] = proxys[columnItem.prop]
     }
   }
-  if (searchForm.value?.page) {
-    value['page'] = searchForm.value.page
-  }
-  if (searchForm.value?.limit) {
-    value['limit'] = searchForm.value.limit
-  }
-  return value
 }
-
 
 /**
  * @description 切换展开收缩状态
@@ -112,11 +110,11 @@ const search = (p: number = 1) => {
   searchRef.value?.validate(valid => {
     if (valid) {
       // 搜索自动使用第一页进行搜索
-      if (searchForm.value.page) {
-        searchForm.value.page = p;
+      if (proxys.page) {
+        proxys.page = p;
       }
       // emit搜索事件 如果非第一页，自动重置第一页
-      emits('search', searchForm.value)
+      emits('search', proxys)
     }
   })
 }
@@ -126,11 +124,11 @@ const search = (p: number = 1) => {
  */
 const reset = () => {
   // 重置分页参数
-  if (searchForm.value.page) {
-    searchForm.value.page = 1;
+  if (proxys.page) {
+    proxys.page = 1;
   }
-  if (searchForm.value.limit) {
-    searchForm.value.limit = 10
+  if (proxys.limit) {
+    proxys.limit = 10
   }
   // 清空搜索表单的字段
   searchRef.value?.resetFields()
@@ -139,10 +137,10 @@ const reset = () => {
 }
 
 // 更新配置项
-searchOption.value = Object.assign(defaultOption, props.option);
+searchOption.value = Object.assign(defaultOption, props.option, { column: getSearchColumns(props.option!.column) });
 
-// 第一次加载组件先初始化form表单对象的字段默认值
-searchForm.value = getFormByColumn(searchOptionColumns.value as ISearchOptionColumn[])
+// 设置初始化值
+setFormByColumn(searchOption.value.column as ISearchOptionColumn[])
 
 defineExpose({
   search,
@@ -158,20 +156,20 @@ defineExpose({
       :size="size"
       :inline="true"
       :label-width="searchOption.labelWidth"
-      :model="searchForm"
+      :model="proxys"
       @submit.native.prevent
     >
       <el-row :gutter="0">
-        <template v-for="(column, columnIndex) in searchOptionColumns" :key="columnIndex">
+        <template v-for="(column, columnIndex) in searchOption.column" :key="columnIndex">
           <el-col v-if="!searchOption.col || !searchCol || (columnIndex < (searchOption.colIndex || 3))" :span="column.span">
             <el-form-item style="width: 100%" :label="column.label + ':'" :prop="column.prop" :rule="column.rule">
               <!--插槽-->
-              <slot v-if="column.slot" :name="column.prop" v-bind="{$query: searchForm}" />
+              <slot v-if="column.slot" :name="column.prop" v-bind="{$query: proxys}" />
               <!--输入框-->
               <template v-else-if="!column.type || ['input', 'textarea', 'number'].includes(column.type as string)">
                 <el-input
                   style="width: 100%"
-                  v-model.trim="searchForm![column.prop]"
+                  v-model.trim="proxys[column.prop]"
                   type="text"
                 />
               </template>
@@ -179,7 +177,7 @@ defineExpose({
               <template v-else-if="['select', 'radio', 'checkbox'].includes(column.type)">
                 <el-select
                   style="width: 100%;"
-                  v-model="searchForm![column.prop]"
+                  v-model="proxys[column.prop]"
                   :clearable="column.clearable"
                   :multiple="column.multiple"
                 >
@@ -196,7 +194,7 @@ defineExpose({
               <template v-else-if="['year','month','week','date','datetime','datetimerange','daterange','monthrange'].includes(column.type)">
                 <el-date-picker
                   style="width: 100%;"
-                  v-model="searchForm![column.prop]"
+                  v-model="proxys[column.prop]"
                   :type="column.type"
                   v-bind="column"
                 >
@@ -205,7 +203,7 @@ defineExpose({
               <template v-else-if="column.type === 'time'">
                 <el-time-picker
                   style="width: 100%;"
-                  v-model="searchForm![column.prop]"
+                  v-model="proxys[column.prop]"
                   v-bind="column"
                 >
                 </el-time-picker>

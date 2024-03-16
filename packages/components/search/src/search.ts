@@ -120,7 +120,7 @@ export const searchProps = buildProps({
   /**
    * @description 搜索表单绑定的值
    */
-  modelValue: {
+  model: {
     type: Object,
     required: true
   }
@@ -130,7 +130,6 @@ export const searchProps = buildProps({
  * @description 组件emits
  */
 export const searchEmits = {
-  ['update:modelValue']: (data: any) => isObject(data),
   /**
    * @description 搜索
    * @param form 搜索表单

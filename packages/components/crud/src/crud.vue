@@ -19,67 +19,28 @@ const mSearchRef = ref<SearchInstance>()
 /**
  * @description crud配置
  */
-const crudOption = computed<ICrudOption>(() => {
-  // 设置crud默认值
-  const option: ICrudOption = {
-    ...props.option,
-    addBtn: props.option?.addBtn === undefined ? true : props.option.addBtn,
-    addBtnIcon: 'Plus',
-    addBtnText: '新 增',
-    column: props.option!.column
-  }
-  return option
+const crudOption = ref<ICrudOption>({
+  ...props.option,
+  addBtn: props.option?.addBtn === undefined ? true : props.option.addBtn,
+  addBtnIcon: 'Plus',
+  addBtnText: '新 增',
+  column: props.option!.column
 })
 
 /**
- * @description 搜索列
+ * @description 搜索配置
  */
-const searchOption = computed<ISearchOption>(() => {
-  const columns: ISearchOptionColumn[] = []
-  for (let i = 0; i < crudOption.value.column.length; i++) {
-    const columnItem: ICrudOptionColumn = crudOption.value.column[i]
-    // 是否开启搜素
-    if (columnItem.search) {
-      columns.push({
-        ...columnItem,
-        // 插槽
-        slot: columnItem.searchSlot,
-        // 搜索默认参数
-        value: columnItem.searchValue,
-        // 搜索输入框最大长度
-        maxlength: columnItem.searchMaxLength,
-        // 搜索输入框占位符
-        placeholder: columnItem.searchPlaceholder,
-      })
-    }
-  }
-  const option: ISearchOption = {
-    ...crudOption.value,
-    column: columns
-  }
-  return option
+const searchOption = ref<ISearchOption>({
+  ...crudOption.value,
+  column: []
 })
-
 
 /**
  * @description 表格列
  */
-const tableOption = computed<ITableOption>(() => {
-  const columns: ITableOptionColumn[] = []
-  for (let i = 0; i < crudOption.value.column.length; i++) {
-    const columnItem = crudOption.value.column[i]
-    // 没有隐藏列表
-    if (!columnItem.hide) {
-      columns.push({
-        ...columnItem
-      })
-    }
-  }
-  const option: ITableOption = {
-    ...crudOption.value,
-    column: columns
-  }
-  return option;
+const tableOption = ref<ITableOption>({
+  ...crudOption.value,
+  column: []
 })
 
 /**
@@ -146,6 +107,43 @@ const handleSearch = (form: any) => {
 const handleReset = () => {
   emits('reset')
 }
+
+/**
+ * @description 设置所有配置列
+ * @param { ICrudOptionColumn[] } arr crud配置列
+ */
+const setAllOptionColumn = (arr: ICrudOptionColumn[]): void => {
+  const tableColumns: ITableOptionColumn[] = []
+  const searchColumns: ISearchOptionColumn[] = []
+  for (let i = 0; i < crudOption.value.column.length; i++) {
+    const columnItem: ICrudOptionColumn = JSON.parse(JSON.stringify(arr[i]))
+    // 是否开启搜素
+    if (columnItem.search) {
+      searchColumns.push({
+        ...columnItem,
+        // 插槽
+        slot: columnItem.searchSlot,
+        // 搜索默认参数
+        value: columnItem.searchValue,
+        // 搜索输入框最大长度
+        maxlength: columnItem.searchMaxLength,
+        // 搜索输入框占位符
+        placeholder: columnItem.searchPlaceholder,
+      })
+    }
+    // 没有隐藏列表
+    if (!columnItem.hide) {
+      tableColumns.push({
+        ...columnItem
+      })
+    }
+  }
+  searchOption.value.column = searchColumns
+  tableOption.value.column = tableColumns
+}
+
+// 设置所有配置列
+setAllOptionColumn(crudOption.value.column)
 </script>
 
 <template>
@@ -153,7 +151,7 @@ const handleReset = () => {
     <!--搜索区域-->
     <m-search
       :option="searchOption"
-      v-model="searchForm"
+      :model="searchForm"
       ref="mSearchRef"
       :size="size"
       :loading="loading"
