@@ -13,10 +13,9 @@ const total = ref(100)
 const loading = ref(false)
 
 const tableOption: ICrudOption = {
-  col: true,
+  col: false,
   colIndex: 2,
   border: true,
-  addBtn: false,
   column: [
     {
       label: '测试',

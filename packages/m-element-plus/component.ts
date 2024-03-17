@@ -6,6 +6,7 @@ import { MTable } from '@m-element-plus/components/table'
 import { MCrud } from '@m-element-plus/components/crud'
 import { MPagination } from '@m-element-plus/components/pagination'
 import { MSearch } from '@m-element-plus/components/search'
+import { MForm } from '@m-element-plus/components/form'
 
 import type { Plugin } from 'vue'
 
@@ -17,5 +18,6 @@ export default [
   MTable,
   MCrud,
   MPagination,
-  MSearch
+  MSearch,
+  MForm
 ] as Plugin[]

@@ -41,6 +41,18 @@ export interface ICrudOptionColumn extends ITableOptionColumn, ISearchOptionColu
    * @description 输入框占位文本
    */
   searchPlaceholder?: string;
+  /**
+   * @description 新增表单隐藏
+   */
+  addHide?: boolean;
+  /**
+   * @description 编辑表单隐藏
+   */
+  editHide?: boolean;
+  /**
+   * @description 查看表单隐藏
+   */
+  viewHide?: boolean;
 }
 
 /**
@@ -59,6 +71,14 @@ export interface ICrudOption extends ITableOption, ISearchOption {
    * @description 新增按钮图标
    */
   addBtnIcon?: string;
+  /**
+   * @description 搜索label宽度
+   */
+  searchLabelWidth?: string;
+  /**
+   * @description 表单label宽度
+   */
+  formLabelWidth?: string;
   /**
    * @description crud列配置
    */

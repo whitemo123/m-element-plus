@@ -261,6 +261,34 @@ onMounted(() => {
           <MQrcode v-if="column.type === 'qrcode'" :align="column.align" :text="row[column.prop]" @click="openQrcodePreview" />
         </template>
       </el-table-column>
+      <el-table-column
+        v-if="tableOption.menu"
+        :label="tableOption.menuTitle"
+        align="center"
+        :width="tableOption.menuWidth"
+        :fixed="tableOption.menuFixed"
+      >
+        <template #default="scope">
+          <el-link
+            class="m-control-btns"
+            type="primary"
+            :underline="false"
+            v-if="tableOption.editBtn"
+            :icon="tableOption.editBtnIcon"
+          >
+            {{ tableOption.editBtnText }}
+          </el-link>
+          <el-link
+            class="m-control-btns"
+            type="primary"
+            :underline="false"
+            v-if="tableOption.delBtn"
+            :icon="tableOption.delBtnIcon"
+          >
+            {{ tableOption.delBtnText }}
+          </el-link>
+        </template>
+      </el-table-column>
     </el-table>
     <!-- qrcode预览 -->
     <MDialog

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { get, set } from 'lodash-es';
 import { ISearchOption, ISearchOptionColumn, searchEmits, searchProps } from './search';
 import { isEmpty } from '@m-element-plus/components/common/utils';
@@ -136,11 +136,19 @@ const reset = () => {
   emits('reset')
 }
 
-// 更新配置项
-searchOption.value = Object.assign(defaultOption, props.option, { column: getSearchColumns(props.option!.column) });
+/**
+ * 检测配置更新
+ */
+watch(() => props.option as ISearchOption, (newVal: ISearchOption) => {
+  // 更新配置项
+  searchOption.value = Object.assign(defaultOption, newVal, { column: getSearchColumns(newVal.column) });
 
-// 设置初始化值
-setFormByColumn(searchOption.value.column as ISearchOptionColumn[])
+  // 设置初始化值
+  setFormByColumn(searchOption.value.column as ISearchOptionColumn[])
+}, {
+  immediate: true,
+  deep: true
+})
 
 defineExpose({
   search,

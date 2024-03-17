@@ -9,6 +9,7 @@ declare module '@vue/runtime-core' {
     MCrud: typeof import('m-element-plus')['MCrud']
     MPagination: typeof import('m-element-plus')['MPagination']
     MSearch: typeof import('m-element-plus')['MSearch']
+    MForm: typeof import('m-element-plus')['MForm']
   }
 }
 

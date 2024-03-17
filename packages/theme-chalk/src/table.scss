@@ -41,3 +41,13 @@
   margin: 10px auto;
   text-align: center;
 }
+
+.m-control-btns {
+  margin-left: 10px;
+  &:first-child {
+    margin-left: 0;
+  }
+  .el-link__inner {
+    margin-left: 5px;
+  }
+}
