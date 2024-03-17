@@ -11,7 +11,7 @@ defineOptions({
 const defaultOptions: IFormOption = {
   // 标签宽度
   labelWidth: '80px',
-  
+
   column: []
 }
 
@@ -36,7 +36,7 @@ const formOption = ref<IFormOption>({
 
 // 监听配置信息
 watch(() => props.option as IFormOption, (newVal: IFormOption) => {
-
+  
 }, {
   immediate: true,
   deep: true
