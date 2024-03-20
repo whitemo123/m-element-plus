@@ -170,7 +170,7 @@ defineExpose({
       <el-row :gutter="0">
         <template v-for="(column, columnIndex) in searchOption.column" :key="columnIndex">
           <el-col v-if="!searchOption.col || !searchCol || (columnIndex < (searchOption.colIndex || 3))" :span="column.span">
-            <el-form-item style="width: 100%" :label="column.label + ':'" :prop="column.prop" :rule="column.rule">
+            <el-form-item style="width: 100%" :label="column.label + ':'" :prop="column.prop" :rules="column.rule">
               <!--插槽-->
               <slot v-if="column.slot" :name="column.prop" v-bind="{$query: proxys}" />
               <!--输入框-->
@@ -182,7 +182,7 @@ defineExpose({
                 />
               </template>
               <!--多选-->
-              <template v-else-if="['select', 'radio', 'checkbox'].includes(column.type)">
+              <template v-else-if="['select', 'radio', 'checkbox', 'switch'].includes(column.type)">
                 <el-select
                   style="width: 100%;"
                   v-model="proxys[column.prop]"

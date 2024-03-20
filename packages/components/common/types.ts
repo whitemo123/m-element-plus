@@ -25,7 +25,7 @@ export type DateTypes = 'year' | 'month' | 'date' | 'datetime' | 'week' | 'datet
 /**
  * @description column类型
  */
-export type ColumnType = InputTypes | DateTypes | 'select' | 'checkbox' | 'radio' | 'picture' | 'qrcode'
+export type ColumnType = InputTypes | DateTypes | 'select' | 'checkbox' | 'radio' | 'switch' | 'picture' | 'qrcode'
 
 /**
  * @description 通用字典内容

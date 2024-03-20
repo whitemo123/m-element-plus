@@ -211,8 +211,6 @@ watch(() => props.option as ICrudOption, (newVal: ICrudOption) => {
   immediate: true,
   deep: true
 })
-
-console.log(2222)
 </script>
 
 <template>
@@ -251,8 +249,8 @@ console.log(2222)
         <slot :name="item.prop" v-bind="scope"  />
       </template>
       <!--菜单插槽-->
-      <template v-slot:menu="scope">
-        
+      <template v-if="slots.menu" v-slot:menu="scope">
+        <slot name="menu" v-bind="scope" />
       </template>
     </m-table>
     <!--分页区域-->

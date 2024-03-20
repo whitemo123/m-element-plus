@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue'
-import { MRender, MPicture, MQrcode, MDialog } from '@m-element-plus/components'
+import { computed, onMounted, ref, useSlots } from 'vue'
 import { ElTable } from 'element-plus'
+import { MRender, MPicture, MQrcode, MDialog } from '@m-element-plus/components'
 import QrcodeFix from 'qrcodejs2-fix'
 import { ITableOption, tableProps, tableEmits, ITableOptionColumn } from './table'
 import type { IDictValue } from '../../common/types'
@@ -39,6 +39,8 @@ const defaultTableOption = {
 }
 
 const props = defineProps(tableProps)
+
+const slots = useSlots()
 
 // 表格配置
 const tableOption = ref<ITableOption>({
@@ -269,24 +271,27 @@ onMounted(() => {
         :fixed="tableOption.menuFixed"
       >
         <template #default="scope">
-          <el-link
-            class="m-control-btns"
-            type="primary"
-            :underline="false"
-            v-if="tableOption.editBtn"
-            :icon="tableOption.editBtnIcon"
-          >
-            {{ tableOption.editBtnText }}
-          </el-link>
-          <el-link
-            class="m-control-btns"
-            type="primary"
-            :underline="false"
-            v-if="tableOption.delBtn"
-            :icon="tableOption.delBtnIcon"
-          >
-            {{ tableOption.delBtnText }}
-          </el-link>
+          <slot v-if="slots.menu" name="menu" v-bind="scope" />
+          <template v-else>
+            <el-link
+              class="m-control-btns"
+              type="primary"
+              :underline="false"
+              v-if="tableOption.editBtn"
+              :icon="tableOption.editBtnIcon"
+            >
+              {{ tableOption.editBtnText }}
+            </el-link>
+            <el-link
+              class="m-control-btns"
+              type="primary"
+              :underline="false"
+              v-if="tableOption.delBtn"
+              :icon="tableOption.delBtnIcon"
+            >
+              {{ tableOption.delBtnText }}
+            </el-link>
+          </template>
         </template>
       </el-table-column>
     </el-table>
