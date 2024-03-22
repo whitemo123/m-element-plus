@@ -3,6 +3,7 @@ import { ref, watch } from 'vue'
 import { get, set } from 'lodash-es';
 import { IFormOption, IFormOptionColumn, formProps } from './form';
 import { isEmpty } from '@m-element-plus/utils';
+import { FormInstance } from 'element-plus';
 
 defineOptions({
   name: "MForm"
@@ -18,6 +19,9 @@ const defaultOption: IFormOption = {
 
 // props
 const props = defineProps(formProps)
+
+// 表单ref
+const formRef = ref<FormInstance>()
 
 // 绑定值
 const proxys = new Proxy(props.model as any, {
@@ -51,10 +55,10 @@ const setFormValueByColumn = (column: IFormOptionColumn[]) => {
         (columnItem.type === 'select' && columnItem.multiple) ||
         columnItem.type === 'checkbox'
       ) {
-        proxys[columnItem.prop] = isEmpty(columnItem.value) ? [] : columnItem.value
+        proxys[columnItem.prop] = []
       } else {
         // 其他类型全部传空字符
-        proxys[columnItem.prop] = isEmpty(columnItem.value) ? '' : columnItem.value
+        proxys[columnItem.prop] = ''
       }
     } else {
       proxys[columnItem.prop] = proxys[columnItem.prop]
@@ -82,6 +86,17 @@ const getFormColumns = (arr: IFormOptionColumn[]) => {
   return result
 }
 
+/**
+ * @description 校验表单
+ */
+const validForm = (): Promise<boolean> => {
+  return new Promise(resolve => {
+    formRef.value!.validate(valid => {
+      resolve(valid)
+    })
+  })
+}
+
 // 监听配置信息
 watch(() => props.option as IFormOption, (newVal: IFormOption) => {
   // 更新配置项
@@ -92,6 +107,11 @@ watch(() => props.option as IFormOption, (newVal: IFormOption) => {
 }, {
   immediate: true,
   deep: true
+})
+
+
+defineExpose({
+  validForm
 })
 </script>
 
@@ -111,7 +131,7 @@ watch(() => props.option as IFormOption, (newVal: IFormOption) => {
           :key="columnIndex"
           :span="column.span"
         >
-          <el-form-item style="width: 100%" :label="column.label + ':'" :prop="column.prop" :rules="column.rule">
+          <el-form-item style="width: 100%" :label="column.label + ':'" :prop="column.prop" :rules="column.rules">
             <!--插槽-->
             <slot v-if="column.slot" :name="column.prop" v-bind="{$query: proxys}" />
             <!--输入框-->

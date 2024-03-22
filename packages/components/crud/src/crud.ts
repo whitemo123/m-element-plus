@@ -53,6 +53,18 @@ export interface ICrudOptionColumn extends ITableOptionColumn, ISearchOptionColu
    * @description 查看表单隐藏
    */
   viewHide?: boolean;
+  /**
+   * @description 新增插槽
+   */
+  addSlot?: boolean;
+  /**
+   * @description 编辑插槽
+   */
+  editSlot?: boolean;
+  /**
+   * @description 查看插槽
+   */
+  viewSlot?: boolean;
 }
 
 /**
@@ -80,6 +92,22 @@ export interface ICrudOption extends ITableOption, ISearchOption {
    */
   formLabelWidth?: string;
   /**
+   * @description 新增弹窗标题
+   */
+  addDialogTitle?: string;
+  /**
+   * @description 编辑弹窗标题
+   */
+  editDialogTitle?: string;
+  /**
+   * @description 查看弹窗标题
+   */
+  viewDialogTitle?: string;
+  /**
+   * @description 弹窗宽度
+   */
+  dialogWidth?: string;
+  /**
    * @description crud列配置
    */
   column: ICrudOptionColumn[]
@@ -102,6 +130,13 @@ export const crudProps = buildProps({
    */
   search: {
     type: Object,
+  },
+  /**
+   * @description 表单绑定值
+   */
+  modelValue: {
+    type: Object,
+    required: true
   },
   /**
    * @description 表格数据
@@ -141,6 +176,12 @@ export const crudProps = buildProps({
   option: {
     type: definePropType<ICrudOption>(Object),
     required: true
+  },
+  /**
+   * @description 新增/编辑确认前事件
+   */
+  beforeEnter: {
+    type: Function,
   }
 })
 
@@ -151,6 +192,12 @@ export const crudEmits = {
    * @returns 
    */
   ['update:page']: (page: ICrudPage) => isNumber(page.page) && isNumber(page.limit),
+  /**
+   * @description 更新表单值
+   * @param data 表单绑定值
+   * @returns 
+   */
+  ['update:modelValue']: (data: any) => true,
   /**
    * @description 更新search绑定的值
    * @param value 搜索表单参数
@@ -174,4 +221,19 @@ export const crudEmits = {
    * @returns 
    */
   reset: () => true,
+  /**
+   * @description 新增事件
+   * @param form 表单内容
+   * @param done 完成回调
+   * @param loading 加载关闭回调
+   * @returns 
+   */
+  rowSave: (form: any, done: Function, loading: Function) => true,
+  /**
+   * @description 删除事件
+   * @param row 行数据
+   * @param index 行索引
+   * @returns 
+   */
+  rowDel: (row: any, index: number) => true,
 }

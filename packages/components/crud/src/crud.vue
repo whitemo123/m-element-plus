@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, watch, useSlots } from 'vue'
-import { MPagination, MTable, MSearch, ISearchOption, ITableOption, ISearchOptionColumn, ITableOptionColumn, SearchInstance, IFormOption, IFormOptionColumn } from "@m-element-plus/components";
+import { computed, ref, useSlots } from 'vue'
+import { MPagination, MTable, MSearch, MForm, MDialog, FormInstance } from "@m-element-plus/components";
+import type { ISearchOption, ITableOption, ISearchOptionColumn, ITableOptionColumn, SearchInstance, IFormOption, IFormOptionColumn } from "@m-element-plus/components"
 import { crudProps, crudEmits, ICrudOption, ICrudOptionColumn } from './crud';
+import { ElMessageBox } from 'element-plus';
 
 defineOptions({
   name: 'MCrud',
@@ -11,15 +13,25 @@ const props = defineProps(crudProps)
 
 const emits = defineEmits(crudEmits)
 
+// 插槽
 const slots = useSlots()
 
 // 搜索ref
 const mSearchRef = ref<SearchInstance>()
 
+// 弹窗类型
+const dialogType = ref<'add'|'edit'|'view'>('add')
+
+// 弹窗状态
+const formDialog = ref(false)
+
+// 表单ref
+const crudFormRef = ref<FormInstance>()
+
 /**
  * @description crud配置
  */
-const crudOption = ref<ICrudOption>({
+const crudOption = computed<ICrudOption>(() => ({
   ...props.option,
   // 新增按钮
   addBtn: props.option?.addBtn === undefined ? true : props.option.addBtn,
@@ -45,31 +57,137 @@ const crudOption = ref<ICrudOption>({
   delBtnText: props.option?.delBtnText === undefined ? '删 除' : props.option.delBtnText,
   // 编辑按钮图标
   delBtnIcon: props.option?.delBtnIcon === undefined ? 'Delete' : props.option.delBtnIcon,
+  // 搜索label宽度
+  searchLabelWidth: props.option?.searchLabelWidth === undefined ? '80px' : props.option.searchLabelWidth,
+  // 新增弹窗标题
+  addDialogTitle: props.option?.addDialogTitle === undefined ? '新增' : props.option.addDialogTitle,
+  // 修改弹窗标题
+  editDialogTitle: props.option?.editDialogTitle === undefined ? '修改' : props.option.editDialogTitle,
+  // 详情弹窗标题
+  viewDialogTitle: props.option?.viewDialogTitle === undefined ? '查看' : props.option.viewDialogTitle,
+  // 弹窗宽度
+  dialogWidth: props.option?.dialogWidth === undefined ? '800px' : props.option.dialogWidth,
+
   column: props.option!.column
+}))
+
+/**
+ * @description 弹窗标题
+ */
+const dialogTitle = computed(() => {
+  let title;
+  if (dialogType.value === 'add') {
+    title = crudOption.value.addDialogTitle
+  } else if (dialogType.value === 'edit') {
+    title = crudOption.value.editDialogTitle
+  } else {
+    title = crudOption.value.viewDialogTitle
+  }
+  return title
 })
 
 /**
  * @description 搜索配置
  */
-const searchOption = ref<ISearchOption>({
-  ...crudOption.value,
-  column: []
+ const searchOption = computed<ISearchOption>(() => {
+  // 配置列
+  const column: ISearchOptionColumn[] = []
+
+  for (let i = 0; i < crudOption.value.column.length; i++) {
+    const columnItem: ICrudOptionColumn = crudOption.value.column[i]
+    // 是否开启搜素
+    if (columnItem.search) {
+      column.push({
+        ...columnItem,
+        // 插槽
+        slot: columnItem.searchSlot,
+        // 搜索默认参数
+        value: columnItem.searchValue,
+        // 搜索输入框最大长度
+        maxlength: columnItem.searchMaxLength,
+        // 搜索输入框占位符
+        placeholder: columnItem.searchPlaceholder,
+      })
+    }
+  }
+
+  // 配置项
+  const options: ISearchOption = {
+    ...crudOption.value,
+    // 搜索label宽度
+    labelWidth: crudOption.value.searchLabelWidth,
+    // 配置列
+    column
+  }
+  return options
 })
 
 /**
  * @description 表格配置
  */
-const tableOption = ref<ITableOption>({
-  ...crudOption.value,
-  column: []
+const tableOption = computed<ITableOption>(() => {
+  // 配置列
+  const column: ITableOptionColumn[] = []
+
+  for (let i = 0; i < crudOption.value.column.length; i++) {
+    const columnItem: ICrudOptionColumn = crudOption.value.column[i]
+    if (!columnItem.hide) {
+      column.push({
+        ...columnItem
+      })
+    }
+  }
+
+  // 配置项
+  const options: ITableOption = {
+    ...crudOption.value,
+    // 配置列
+    column
+  }
+  return options
 })
+
 
 /**
  * @description 表单配置
  */
-const formOption = ref<IFormOption>({
-  ...crudOption.value,
-  column: []
+const formOption = computed<IFormOption>(() => {
+  // 配置列
+  const column: IFormOptionColumn[] = []
+
+  for (let i = 0; i < crudOption.value.column.length; i++) {
+    const columnItem: ICrudOptionColumn = crudOption.value.column[i]
+    if (dialogType.value === 'add') {
+      // 新增
+      if (!columnItem.addHide) {
+        column.push({
+          ...columnItem
+        })
+      }
+    } else if (dialogType.value === 'edit') {
+      // 修改
+      if (!columnItem.editHide) {
+        column.push({
+          ...columnItem
+        })
+      }
+    } else {
+      // 查看
+      if (!columnItem.viewHide) {
+        column.push({
+          ...columnItem
+        })
+      }
+    }
+  }
+
+  // 配置项
+  const options: IFormOption = {
+    ...crudOption.value,
+    // 配置列
+    column
+  }
+  return options
 })
 
 /**
@@ -83,6 +201,19 @@ const searchForm = computed({
     emits('update:search', value)
   }
 })
+
+/**
+ * @description 表单绑定值
+ */
+const modelForm = computed({
+  get() {
+    return props.modelValue
+  },
+  set(value: any) {
+    emits('update:modelValue', value)
+  }
+})
+
 
 /**
  * @description 选择的数据
@@ -109,7 +240,20 @@ const searchSlotColumns = computed(() => searchOption.value.column.filter(item =
 /**
  * @description 表单已经开启插槽的columns
  */
-const formSlotColumns = computed(() => formOption.value.column.filter(item => item.slot))
+const formSlotColumns = computed(() => {
+  if (dialogType.value === 'add') {
+    // @ts-ignore
+    return formOption.value.column.filter(item => item.addSlot)
+  }
+  if (dialogType.value === 'edit') {
+    // @ts-ignore
+    return formOption.value.column.filter(item => item.editSlot)
+  }
+  if (dialogType.value === 'view') {
+    // @ts-ignore
+    return formOption.value.column.filter(item => item.viewSlot)
+  }
+})
 
 /**
  * @description 当前页发生改变
@@ -143,73 +287,91 @@ const handleReset = () => {
 }
 
 /**
- * @description 设置所有配置列
- * @param { ICrudOptionColumn[] } arr crud配置列
+ * @description 新增/修改弹窗确认
  */
-const setAllOptionColumn = (arr: ICrudOptionColumn[]): void => {
-  // 表格配置列
-  const tableColumns: ITableOptionColumn[] = []
-  // 搜索配置列
-  const searchColumns: ISearchOptionColumn[] = []
-  // 表单配置列
-  const formColumns: IFormOptionColumn[] = []
-
-  for (let i = 0; i < crudOption.value.column.length; i++) {
-    const columnItem: ICrudOptionColumn = JSON.parse(JSON.stringify(arr[i]))
-    // ==== 搜索 ====
-    // 是否开启搜素
-    if (columnItem.search) {
-      searchColumns.push({
-        ...columnItem,
-        // 插槽
-        slot: columnItem.searchSlot,
-        // 搜索默认参数
-        value: columnItem.searchValue,
-        // 搜索输入框最大长度
-        maxlength: columnItem.searchMaxLength,
-        // 搜索输入框占位符
-        placeholder: columnItem.searchPlaceholder,
-      })
-    }
-    // =============
-    // ==== 表格 ====
-    // 没有隐藏列表
-    if (!columnItem.hide) {
-      tableColumns.push({
-        ...columnItem
-      })
-    }
-    // =============
-    // ==== 表单 ====
-    
-    // =============
+const dialogEnter = async (done: Function, loading: Function) => {
+  const valid = await crudFormRef.value!.validForm()
+  // 校验不通过
+  if (!valid) {
+    loading()
+    return
   }
-  // 设置搜索列配置
-  searchOption.value.column = searchColumns;
-  // 设置列表配置
-  tableOption.value.column = tableColumns
-  // 设置表单配置
-  formOption.value.column = formColumns
+
+  // 表单前校验
+  if (props.beforeEnter && !(await props.beforeEnter())) {
+    loading()
+    return
+  }
+
+  emits("rowSave", modelForm.value, done, loading)
+}
+
+/**
+ * @description 新增/修改弹窗取消
+ */
+const dialogCancel = () => {
+
 }
 
 
 /**
- * @description 监听配置列变化
+ * @description 打开新增函数
  */
-watch(() => props.option as ICrudOption, (newVal: ICrudOption) => {
-  // 设置所有配置列
-  setAllOptionColumn(newVal.column)
+const rowAdd = () => {
+  // 弹窗类型
+  dialogType.value = 'add'
+  // 弹窗状态
+  formDialog.value = true
+}
 
-  // 设置默认配置
-  if (newVal.searchLabelWidth) {
-    searchOption.value.labelWidth = newVal.searchLabelWidth
+/**
+ * @description 打开编辑修改
+ */
+const rowEdit = (row: any, index: number) => {
+  // 弹窗类型
+  dialogType.value = 'edit'
+  for (const key in row) {
+    modelForm.value[key] = row[key]
   }
-  if (newVal.formLabelWidth) {
-    formOption.value.labelWidth = newVal.formLabelWidth
+  // 弹窗状态
+  formDialog.value = true
+}
+
+/**
+ * @description 打开详情
+ */
+const rowView = (row: any, index: number) => {
+  // 弹窗类型
+  dialogType.value = 'view'
+  for (const key in row) {
+    modelForm.value[key] = row[key]
   }
-}, {
-  immediate: true,
-  deep: true
+  // 弹窗状态
+  formDialog.value = true
+}
+
+/**
+ * @description 打开删除
+ */
+const rowDel = (row: any, index: number) => {
+  ElMessageBox.confirm(
+    '此操作将删除该数据, 是否继续?',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(() => {
+    emits('rowDel', row, index)
+  }).catch(() => {
+  })
+}
+
+defineExpose({
+  rowAdd,
+  rowEdit,
+  rowView
 })
 </script>
 
@@ -232,7 +394,7 @@ watch(() => props.option as ICrudOption, (newVal: ICrudOption) => {
     </m-search>
     <!--新增区域-->
     <div v-if="crudOption.addBtn || slots.topLeft" class="m-search-top">
-      <el-button v-if="crudOption.addBtn" :size="size" type="primary" :icon="crudOption.addBtnIcon">{{ crudOption.addBtnText }}</el-button>
+      <el-button @click="rowAdd()" v-if="crudOption.addBtn" :size="size" type="primary" :icon="crudOption.addBtnIcon">{{ crudOption.addBtnText }}</el-button>
       <slot name="topLeft" />
     </div>
     <!--表格-->
@@ -243,6 +405,8 @@ watch(() => props.option as ICrudOption, (newVal: ICrudOption) => {
       :permission="permission"
       :option="tableOption"
       v-model:select="selectData"
+      @rowEdit="rowEdit"
+      @rowDel="rowDel"
     > 
       <!--动态创建列表的插槽，并传递row,$index-->
       <template v-for="(item, index) in tableSlotColumns" :key="index" v-slot:[item.prop]="scope">
@@ -268,5 +432,33 @@ watch(() => props.option as ICrudOption, (newVal: ICrudOption) => {
         @pageSize="pageSizeChange"
       />
     </div>
+    <!--表单-->
+    <m-dialog
+      :size="size"
+      v-model="formDialog"
+      :title="dialogTitle"
+      save-btn-text="保 存"
+      cancel-btn-text="取 消"
+      :save-btn="dialogType !== 'view'"
+      :cancel-btn="dialogType !== 'view'"
+      :width="crudOption.dialogWidth"
+      @enter="dialogEnter"
+      @cancel="dialogCancel"
+    >
+      <template v-slot="{loading}">
+        <m-form
+          ref="crudFormRef"
+          :size="size"
+          :model="modelForm"
+          :option="formOption"
+          :loading="loading"
+          :readonly="dialogType === 'view'"
+        >
+          <template v-for="(item, index) in formSlotColumns" :key="index" v-slot:[item.prop]="scope">
+            <slot :name="item.prop + 'Form'" v-bind="scope" />
+          </template>
+        </m-form>
+      </template>
+    </m-dialog>
   </div>
 </template>

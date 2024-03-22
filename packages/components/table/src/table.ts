@@ -254,5 +254,19 @@ export const tableEmits = {
    * @description 选择改变
    * @returns 
    */
-  selectionChange: (selection: any) => true
+  selectionChange: (selection: any) => true,
+  /**
+   * @description 行编辑
+   * @param row 行数据
+   * @param index 索引
+   * @returns 
+   */
+  rowEdit: (row: any, index: number) => true,
+  /**
+   * @description 行删除
+   * @param row 行数据
+   * @param index 索引
+   * @returns 
+   */
+  rowDel: (row: any, index: number) => true,
 }

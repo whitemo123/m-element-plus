@@ -16,7 +16,7 @@ const option: IFormOption = {
       label: '年龄',
       prop: "age",
       type: "number",
-      rule: [
+      rules: [
         {
           required: true,
           message: '请输入年龄',

@@ -88,5 +88,33 @@ export const dialogProps = buildProps({
   cancelBtn: {
     type: Boolean,
     default: true
+  },
+  /**
+   * @description 保存按钮文字
+   */
+  saveBtnText: {
+    type: String,
+    default: "确 认"
+  },
+  /**
+   * @description 保存按钮图标
+   */
+  saveBtnIcon: {
+    type: String,
+    default: "CircleCheck"
+  },
+  /**
+   * @description 取消按钮图标
+   */
+  cancelBtnIcon: {
+    type: String,
+    default: "CircleClose"
+  },
+  /**
+   * @description 取消按钮文字
+   */
+  cancelBtnText: {
+    type: String,
+    default: "取 消"
   }
 })

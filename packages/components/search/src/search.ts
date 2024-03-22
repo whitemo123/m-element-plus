@@ -15,7 +15,7 @@ export interface ISearchOptionColumn extends ICommonColumn {
   /**
    * @description 搜索校验规则
    */
-  rule?: FormItemRule[];
+  rules?: FormItemRule[];
   /**
    * @description 栅栏宽度
    */

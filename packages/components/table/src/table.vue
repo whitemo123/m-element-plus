@@ -167,6 +167,20 @@ const tableSelectionChange = (selection: any) => {
 }
 
 /**
+ * @description 行编辑
+ */
+const rowEdit = (row: any, index: number) => {
+  emits('rowEdit', row, index)
+}
+
+/**
+ * @description 行删除
+ */
+const rowDel = (row: any, index: number) => {
+  emits('rowDel', row, index)
+}
+
+/**
  * @description 预览qrcode二维码
  * @param code qrcode二维码
  */
@@ -209,7 +223,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="m-table">
+  <div class="m-table" v-if="tableColumn && tableColumn.length">
     <el-table
       ref="tableRef"
       :data="data"
@@ -279,6 +293,7 @@ onMounted(() => {
               :underline="false"
               v-if="tableOption.editBtn"
               :icon="tableOption.editBtnIcon"
+              @click="rowEdit(scope.row, scope.$index)"
             >
               {{ tableOption.editBtnText }}
             </el-link>
@@ -288,6 +303,7 @@ onMounted(() => {
               :underline="false"
               v-if="tableOption.delBtn"
               :icon="tableOption.delBtnIcon"
+              @click="rowDel(scope.row, scope.$index)"
             >
               {{ tableOption.delBtnText }}
             </el-link>

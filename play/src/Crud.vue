@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import {ITableOption, MTable, MCrud, MPagination, ICrudPage, ICrudOption} from '@m-element-plus/components'
+import {ITableOption, MTable, MCrud, MPagination, ICrudPage, ICrudOption, CrudInstance} from '@m-element-plus/components'
 import '@m-element-plus/theme-chalk/dist/index.css'
 
 const query = ref<ICrudPage>({
@@ -8,124 +8,99 @@ const query = ref<ICrudPage>({
   limit: 10
 })
 
-const total = ref(100)
+const crudRef = ref<CrudInstance>()
+
+const total = ref(0)
 
 const loading = ref(false)
 
-const tableOption: ICrudOption = {
-  col: false,
-  colIndex: 2,
-  border: true,
+const formValue = ref<any>({})
+
+const selects = ref<any>([])
+
+const tableData = ref<any>([
+  {
+    name: "小刘",
+    role: 2,
+    sex: 1
+  }
+])
+
+const option = ref<ICrudOption>({
+  index: true,
   column: [
     {
-      label: '测试',
-      prop: 'test',
-      align: 'center',
-      overHidden: true,
-      type: 'input',
-      help: '我是帮助信息',
+      label: "姓名",
+      prop: "name",
       search: true,
-      searchSlot: false,
-      searchValue: '2'
+      align: "center",
+      rules: [
+        {required: true, message: "请输入姓名", trigger: "blur"}
+      ],
+      value: "默认姓名",
+      slot: true
     },
     {
-      label: 'ID',
-      prop: 'id',
-      align: 'center'
+      label: "身份",
+      prop: "role",
+      type: "select",
+      search: true,
+      align: "center",
+      dicData: [
+        {
+          label: "老师",
+          value: 1
+        },
+        {
+          label: "学生",
+          value: 2
+        },
+        {
+          label: "家长",
+          value: 3
+        }
+      ]
     },
     {
-      label: '插槽',
-      prop: 'slot1',
-      slot: true,
-      align: 'center',
-      dicFormatter: (res) => ({list: res.data, label: 'name', value: 'id'})
-    },
-    {
-      label: "状态",
-      prop: "status",
-      type: "checkbox",
+      label: "性别",
+      prop: "sex",
+      type: "radio",
       align: "center",
       search: true,
       dicData: [
         {
-          label: "启用",
+          label: "男",
           value: 1
         },
         {
-          label: "禁用",
+          label: "女",
           value: 2
-        },
+        }
       ]
-    },
-    // {
-    //   label: "图片",
-    //   prop: "pic",
-    //   type: 'picture',
-    //   align: 'center'
-    // },
-    // {
-    //   label: "qrcode1",
-    //   prop: "qrcode1",
-    //   type: "qrcode",
-    //   align: "center"
-    // },
-    {
-      label: "time",
-      prop: "time",
-      align: "center",
-      type: "year",
-      search: true,
-      searchPlaceholder: '请选择年'
     }
   ]
+})
+
+const rowSave = (form: any, done: Function, loading: Function) => {
+  console.log(form)
 }
-
-const tableData = ref<any>([
-  {
-    test: '测试1',
-    id: 1,
-    slot1: 'slot1',
-    status: 1,
-    pic: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
-    qrcode1: '1',
-    time: '2023'
-  },
-  {
-    id: 2,
-    test: '测试2',
-    slot1: 'slot1',
-    status: 2,
-    qrcode1: 'sasasaasaa',
-    time: '2024'
-  },
-  {
-    id: 3,
-    test: '测试3',
-    slot1: 'slot1',
-    status: '1,2',
-    qrcode1: 'sa121saa212aa21asa21',
-    time: '2021'
-  },
-])
-
-const selects = ref<any>([])
 </script>
 
 <template>
   <div>
     <MCrud
+      ref="crudRef"
       v-model:search="query"
       v-model:select="selects"
+      v-model="formValue"
       :loading="loading"
       :data="tableData"
       :total="total"
-      :option="tableOption"
+      :option="option"
+      @rowSave="rowSave"
     >
-      <template v-slot:slot1="{row, $index}">
-        <span>{{ row.slot1 }}</span>
-      </template>
-      <template v-slot:testSearch="{ $query }">
-        <input v-model="$query.test" />
+      <template v-slot:name="{row, $index}">
+        <span @click="crudRef?.rowView(row, $index)">{{ row.name }}</span>
       </template>
     </MCrud>
   </div>

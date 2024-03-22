@@ -22,7 +22,7 @@ export interface IFormOptionColumn extends ICommonColumn {
   /**
    * @description 搜索校验规则
    */
-  rule?: FormItemRule[];
+  rules?: FormItemRule[];
   /**
    * @description 栅栏宽度
    */
@@ -84,6 +84,13 @@ export const formProps = buildProps({
    * @description 搜索加载状态
    */
   loading: {
+    type: Boolean,
+    default: false
+  },
+  /**
+   * @description 只读模式
+   */
+  readonly: {
     type: Boolean,
     default: false
   },

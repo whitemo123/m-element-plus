@@ -19,10 +19,18 @@ const emits = defineEmits<{
    */
   (e: 'update:modelValue', visible: boolean): void,
   /**
-   * @description 更新弹窗状态
+   * @description 弹窗关闭
    * @param e
    */
-  (e: 'close'): void
+  (e: 'close'): void,
+  /**
+   * @description 弹窗取消
+   */
+  (e: 'cancel'): void,
+  /**
+   * @description 弹窗确认
+   */
+  (e: 'enter', done: Function, loading: Function): void,
 }>()
 
 /**
@@ -37,14 +45,26 @@ const closeDialog = () => {
  * 确认
  */
 const enter = () => {
+  // 弹窗开始加载
+  dialogLoading.value = true
+  // 关闭表单
+  const done = () => {
+    emits('update:modelValue', false)
+  }
+  // 关闭加载
+  const loading = () => {
+    dialogLoading.value = false
+  }
 
+  emits('enter', done, loading)
 }
 
 /**
  * 关闭
  */
 const close = () => {
-
+  emits('update:modelValue', false)
+  emits('cancel')
 }
 
 /**
@@ -80,8 +100,8 @@ const onBeforeClose = (done: Function) => {
     <slot :loading="dialogLoading" />
     <template #footer>
       <div v-if="!slots.btns" class="dialog-footer">
-        <el-button v-if="cancelBtn" :size="size" icon="CircleClose" :loading="dialogLoading" @click="closeDialog">取消</el-button>
-        <el-button v-if="saveBtn" :size="size" icon="CircleCheck" :loading="dialogLoading" type="primary" @click="closeDialog">确认</el-button>
+        <el-button v-if="cancelBtn" :size="size" :icon="cancelBtnIcon" :loading="dialogLoading" @click="close">{{ cancelBtnText }}</el-button>
+        <el-button v-if="saveBtn" :size="size" :icon="saveBtnIcon" :loading="dialogLoading" type="primary" @click="enter">{{ saveBtnText }}</el-button>
       </div>
       <slot :loading="dialogLoading" v-else name="btns"></slot>
     </template>
