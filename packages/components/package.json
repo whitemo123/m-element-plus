@@ -7,15 +7,10 @@
   "unpkg": "index.js",
   "jsdelivr": "index.js",
   "peerDependencies": {
-    "vue": "^3.2.0"
-  },
-  "types": "index.d.ts",
-  "sideEffects": false,
-  "devDependencies": {
+    "vue": "^3.2.0",
     "@element-plus/icons-vue": "^2.3.1",
     "element-plus": "^2.5.5"
   },
-  "dependencies": {
-    "qrcodejs2-fix": "^0.0.1"
-  }
+  "types": "index.d.ts",
+  "sideEffects": false
 }

@@ -6,6 +6,13 @@
     }
   }
 
+  .el-table__header {
+    th.el-table__cell {
+      background-color: #fafafa;
+      color: rgba(0,0,0,.85);
+    }
+  }
+
   .el-table {
     // 解决tool-tip纯数字不换行问题
     .el-popper span:first-child {

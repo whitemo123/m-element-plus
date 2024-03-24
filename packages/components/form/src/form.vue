@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
-import { get, set } from 'lodash-es';
+import { cloneDeep, get, set } from 'lodash-es';
 import { IFormOption, IFormOptionColumn, formProps } from './form';
 import { isEmpty } from '@m-element-plus/utils';
 import { FormInstance } from 'element-plus';
+import { IDictValue } from '@m-element-plus/components/common/types';
 
 defineOptions({
   name: "MForm"
@@ -86,6 +87,41 @@ const getFormColumns = (arr: IFormOptionColumn[]) => {
   return result
 }
 
+
+/**
+ * 获取字典value值
+ * @param column 列
+ * @param row 行数据
+ */
+ const getDictValue = (column: IFormOptionColumn, row: any): string => {
+  const findLabelByValue = (dicData: IDictValue[], value: any) => {
+    const dictItem = (dicData || []).find(dict => column.multiple ? dict.value == value : dict.value === value)
+    if (dictItem === undefined) {
+      return undefined;
+    }
+    return dictItem.label
+  }
+  let dictLabel: string | undefined;
+  if (column.type === 'select' && column.multiple) {
+    // select下拉且开启多选
+    const values: any = (row[column.prop] instanceof Array) ? row[column.prop] : typeof row[column.prop] === 'string' ? row[column.prop].split(',') : [row[column.prop]]
+    const result: string[] = []
+    for (let i = 0; i < values.length; i++) {
+      dictLabel = findLabelByValue((column.dicData || []), values[i])
+      if (dictLabel === undefined) {
+        break;
+      }
+      result.push(dictLabel)
+    }
+    return result.join(',')
+  }
+  dictLabel = findLabelByValue((column.dicData || []), row[column.prop])
+  if (dictLabel === undefined) {
+    return ''
+  }
+  return dictLabel
+}
+
 /**
  * @description 校验表单
  */
@@ -95,6 +131,22 @@ const validForm = (): Promise<boolean> => {
       resolve(valid)
     })
   })
+}
+
+/**
+ * @description 清空数据和校验规则
+ */
+const clear = () => {
+  // 清空校验规则
+  formRef.value?.clearValidate()
+  // 清空表单数据
+  formRef.value?.resetFields()
+
+  // 清空form表单值
+  const form = cloneDeep(props.model)
+  for (const key in form) {
+    delete proxys[key]
+  }
 }
 
 // 监听配置信息
@@ -111,13 +163,15 @@ watch(() => props.option as IFormOption, (newVal: IFormOption) => {
 
 
 defineExpose({
-  validForm
+  validForm,
+  clear
 })
 </script>
 
 <template>
   <div class="m-form-box">
     <el-form
+      v-if="!readonly"
       ref="formRef"
       :disabled="loading"
       :size="size"
@@ -212,5 +266,23 @@ defineExpose({
         </el-col>
       </el-row>
     </el-form>
+    <el-descriptions
+      v-else
+      :size="size"
+      :column="24"
+      border
+    >
+      <el-descriptions-item v-for="(item, index) in formOption.column" :key="index" :label="item.label" :span="item.span">
+        <template v-if="item.type === 'picture'">
+          <!--图片插槽-->
+        </template>
+        <template v-else-if="['select', 'radio', 'checkbox', 'switch'].includes(item.type as string)">
+          {{ getDictValue(item, proxys) }}
+        </template>
+        <template v-else>
+          {{ proxys[item.prop] }}
+        </template>
+      </el-descriptions-item>
+    </el-descriptions>
   </div>
 </template>

@@ -1,4 +1,4 @@
-import { buildProps, definePropType, isObject } from "@m-element-plus/utils";
+import { buildProps, definePropType } from "@m-element-plus/utils";
 import { ColumnType, ICommonColumn } from "@m-element-plus/components/common/types";
 import { useSizeProp } from "@m-element-plus/hooks";
 import { FormItemRule } from "element-plus";

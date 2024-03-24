@@ -1,7 +1,10 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, useSlots } from 'vue'
 import { ElTable } from 'element-plus'
-import { MRender, MPicture, MQrcode, MDialog } from '@m-element-plus/components'
+import MRender from '@m-element-plus/components/render'
+import MPicture from '@m-element-plus/components/picture'
+import MQrcode from '@m-element-plus/components/qrcode'
+import MDialog from '@m-element-plus/components/dialog'
 import QrcodeFix from 'qrcodejs2-fix'
 import { ITableOption, tableProps, tableEmits, ITableOptionColumn } from './table'
 import type { IDictValue } from '../../common/types'

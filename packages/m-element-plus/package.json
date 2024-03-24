@@ -1,6 +1,6 @@
 {
   "name": "m-element-plus",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A Component Library for Vue 3",
   "keywords": [
     "m-element-plus",
@@ -66,18 +66,23 @@
     "lib/components/*/style/*"
   ],
   "peerDependencies": {
-    "vue": "^3.2.0"
+    "vue": "^3.2.0",
+    "@element-plus/icons-vue": "^2.3.1",
+    "element-plus": "^2.5.5"
   },
   "dependencies": {
     "@types/lodash": "^4.14.182",
     "@types/lodash-es": "^4.17.6",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
-    "lodash-unified": "^1.0.2"
+    "lodash-unified": "^1.0.2",
+    "qrcodejs2-fix": "^0.0.1"
   },
   "devDependencies": {
     "@types/node": "*",
-    "vue": "^3.2.37"
+    "vue": "^3.2.37",
+    "@element-plus/icons-vue": "^2.3.1",
+    "element-plus": "^2.5.5"
   },
   "vetur": {
     "tags": "tags.json",

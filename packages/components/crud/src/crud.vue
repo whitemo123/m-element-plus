@@ -1,9 +1,18 @@
 <script setup lang="ts">
 import { computed, ref, useSlots } from 'vue'
-import { MPagination, MTable, MSearch, MForm, MDialog, FormInstance } from "@m-element-plus/components";
-import type { ISearchOption, ITableOption, ISearchOptionColumn, ITableOptionColumn, SearchInstance, IFormOption, IFormOptionColumn } from "@m-element-plus/components"
+
+import MPagination from '@m-element-plus/components/pagination'
+import MTable from '@m-element-plus/components/table'
+import MDialog from '@m-element-plus/components/dialog'
+import MSearch, { SearchInstance } from '@m-element-plus/components/search'
+import MForm, { FormInstance }  from '@m-element-plus/components/form'
+import type { ITableOption, ITableOptionColumn } from '@m-element-plus/components/table'
+import type { ISearchOption, ISearchOptionColumn } from '@m-element-plus/components/search'
+import type { IFormOption, IFormOptionColumn } from '@m-element-plus/components/form'
+
 import { crudProps, crudEmits, ICrudOption, ICrudOptionColumn } from './crud';
 import { ElMessageBox } from 'element-plus';
+import { cloneDeep } from 'lodash-es';
 
 defineOptions({
   name: 'MCrud',
@@ -101,6 +110,8 @@ const dialogTitle = computed(() => {
         ...columnItem,
         // 插槽
         slot: columnItem.searchSlot,
+        // 规则
+        rules: columnItem.searchRules,
         // 搜索默认参数
         value: columnItem.searchValue,
         // 搜索输入框最大长度
@@ -156,7 +167,8 @@ const formOption = computed<IFormOption>(() => {
   const column: IFormOptionColumn[] = []
 
   for (let i = 0; i < crudOption.value.column.length; i++) {
-    const columnItem: ICrudOptionColumn = crudOption.value.column[i]
+    const columnItem: ICrudOptionColumn = cloneDeep(crudOption.value.column[i])
+    delete columnItem.slot
     if (dialogType.value === 'add') {
       // 新增
       if (!columnItem.addHide) {
@@ -315,6 +327,17 @@ const dialogCancel = () => {
 
 
 /**
+ * @description 弹窗关闭
+ */
+const dialogClose = () => {
+  if (crudFormRef.value) {
+    crudFormRef.value.clear()
+  } else {
+    emits('update:modelValue', {})
+  }
+}
+
+/**
  * @description 打开新增函数
  */
 const rowAdd = () => {
@@ -444,8 +467,17 @@ defineExpose({
       :width="crudOption.dialogWidth"
       @enter="dialogEnter"
       @cancel="dialogCancel"
+      @close="dialogClose"
     >
       <template v-slot="{loading}">
+        <!--顶部通用插槽-->
+        <slot v-if="dialogType === 'add' || dialogType === 'edit'" name="topForm" v-bind="{loading, value: modelForm}" />
+        <!--顶部新增插槽-->
+        <slot v-if="dialogType === 'add'" name="topAdd" v-bind="{loading, value: modelForm}" />
+        <!--顶部编辑插槽-->
+        <slot v-if="dialogType === 'edit'" name="topEdit" v-bind="{loading, value: modelForm}" />
+        <!--顶部查看插槽-->
+        <slot v-if="dialogType === 'view'" name="topView" v-bind="{loading, value: modelForm}" />
         <m-form
           ref="crudFormRef"
           :size="size"
@@ -458,6 +490,14 @@ defineExpose({
             <slot :name="item.prop + 'Form'" v-bind="scope" />
           </template>
         </m-form>
+        <!--底部通用插槽-->
+        <slot v-if="dialogType === 'add' || dialogType === 'edit'" name="bottomForm" v-bind="{loading, value: modelForm}" />
+        <!--底部新增插槽-->
+        <slot v-if="dialogType === 'add'" name="bottomAdd" v-bind="{loading, value: modelForm}" />
+        <!--底部编辑插槽-->
+        <slot v-if="dialogType === 'edit'" name="bottomEdit" v-bind="{loading, value: modelForm}" />
+        <!--底部查看插槽-->
+        <slot v-if="dialogType === 'view'" name="bottomView" v-bind="{loading, value: modelForm}" />
       </template>
     </m-dialog>
   </div>

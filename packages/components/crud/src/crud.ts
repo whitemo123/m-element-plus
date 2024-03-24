@@ -3,6 +3,7 @@ import { useSizeProp } from '@m-element-plus/hooks'
 
 import type { ITableDefaultSort, ITableOption, ITableOptionColumn } from "@m-element-plus/components/table";
 import { ISearchOption, ISearchOptionColumn } from "@m-element-plus/components/search";
+import { FormItemRule } from "element-plus";
 
 // 分页参数
 export interface ICrudPage {
@@ -41,6 +42,10 @@ export interface ICrudOptionColumn extends ITableOptionColumn, ISearchOptionColu
    * @description 输入框占位文本
    */
   searchPlaceholder?: string;
+  /**
+   * @description 搜索规则
+   */
+  searchRules?: FormItemRule[];
   /**
    * @description 新增表单隐藏
    */

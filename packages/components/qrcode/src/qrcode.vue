@@ -28,7 +28,7 @@ const alignComputed = computed(() => {
   return 'center'
 })
 
-watch(() => props.text, (newVal: string) => {
+watch(() => props.text as string, (newVal: string) => {
   if (!newVal) return
   setTimeout(() => {
     qrcodeRef.value.innerHTML = ''
