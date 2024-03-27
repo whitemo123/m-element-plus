@@ -194,6 +194,7 @@ defineExpose({
                 style="width: 100%"
                 v-model.trim="proxys[column.prop]"
                 :type="column.type"
+                v-bind="column"
               />
             </template>
             <!--多选-->
@@ -204,6 +205,7 @@ defineExpose({
                 v-model="proxys[column.prop]"
                 :clearable="column.clearable"
                 :multiple="column.multiple"
+                v-bind="column"
               >
                 <el-option
                   v-for="(dicItem, dicIndex) in column.dicData"

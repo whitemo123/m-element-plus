@@ -68,6 +68,8 @@ const crudOption = computed<ICrudOption>(() => ({
   delBtnIcon: props.option?.delBtnIcon === undefined ? 'Delete' : props.option.delBtnIcon,
   // 搜索label宽度
   searchLabelWidth: props.option?.searchLabelWidth === undefined ? '80px' : props.option.searchLabelWidth,
+  // 表单label宽度
+  formLabelWidth: props.option?.formLabelWidth === undefined ? '80px' : props.option.formLabelWidth,
   // 新增弹窗标题
   addDialogTitle: props.option?.addDialogTitle === undefined ? '新增' : props.option.addDialogTitle,
   // 修改弹窗标题
@@ -196,6 +198,8 @@ const formOption = computed<IFormOption>(() => {
   // 配置项
   const options: IFormOption = {
     ...crudOption.value,
+    // 表单label宽度
+    labelWidth: crudOption.value.formLabelWidth,
     // 配置列
     column
   }
