@@ -10,6 +10,7 @@ declare module '@vue/runtime-core' {
     MPagination: typeof import('m-element-plus')['MPagination']
     MSearch: typeof import('m-element-plus')['MSearch']
     MForm: typeof import('m-element-plus')['MForm']
+    MConfigProvider: typeof import('m-element-plus')['MConfigProvider']
   }
 }
 

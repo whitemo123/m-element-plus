@@ -19,11 +19,11 @@ const formValue = ref<any>({})
 const selects = ref<any>([])
 
 const tableData = ref<any>([
-  {
-    name: "小刘",
-    role: 2,
-    sex: 1
-  }
+  // {
+  //   name: "小刘",
+  //   role: 2,
+  //   sex: 1
+  // }
 ])
 
 const option = ref<ICrudOption>({

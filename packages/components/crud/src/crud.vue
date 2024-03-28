@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { computed, ref, useSlots } from 'vue'
+import { computed, onMounted, ref, useSlots, nextTick } from 'vue'
 
+import { useGlobalConfig } from '@m-element-plus/components/config-provider'
 import MPagination from '@m-element-plus/components/pagination'
 import MTable from '@m-element-plus/components/table'
 import MDialog from '@m-element-plus/components/dialog'
 import MSearch, { SearchInstance } from '@m-element-plus/components/search'
 import MForm, { FormInstance }  from '@m-element-plus/components/form'
-import type { ITableOption, ITableOptionColumn } from '@m-element-plus/components/table'
+import type { ITableOption, ITableOptionColumn, TableInstance } from '@m-element-plus/components/table'
 import type { ISearchOption, ISearchOptionColumn } from '@m-element-plus/components/search'
 import type { IFormOption, IFormOptionColumn } from '@m-element-plus/components/form'
 
@@ -22,11 +23,19 @@ const props = defineProps(crudProps)
 
 const emits = defineEmits(crudEmits)
 
+const globalConfig = useGlobalConfig()
+
 // 插槽
 const slots = useSlots()
 
 // 搜索ref
 const mSearchRef = ref<SearchInstance>()
+
+// 表格ref
+const mTableRef = ref<TableInstance>()
+
+// 表格高度
+const tableHeight = ref<any>(undefined)
 
 // 弹窗类型
 const dialogType = ref<'add'|'edit'|'view'>('add')
@@ -395,6 +404,28 @@ const rowDel = (row: any, index: number) => {
   })
 }
 
+/**
+ * @description 获取表格高度
+ */
+ const getTableHeight = () => {
+  nextTick(() => {
+    // 表格style对象
+    const tableStyle = mTableRef.value?.$el;
+    // 分页对象
+    const pageStyle: any = document.querySelector('.m-pagination-box')
+    // 额外可控制高度参数
+    const calcHeight: number = props.option?.calcHeight || globalConfig.value.calcHeight || 0
+
+    // 表格高度设置
+    tableHeight.value = document.documentElement.clientHeight - tableStyle.offsetTop - pageStyle.offsetHeight - calcHeight;
+  })
+}
+
+onMounted(() => {
+  // 获取表格高度
+  getTableHeight()
+})
+
 defineExpose({
   rowAdd,
   rowEdit,
@@ -426,12 +457,15 @@ defineExpose({
     </div>
     <!--表格-->
     <m-table
+      ref="mTableRef"
       :data="data"
       :size="size"
       :loading="loading"
       :permission="permission"
       :option="tableOption"
       v-model:select="selectData"
+      :height="tableHeight"
+      :maxHeight="tableHeight"
       @rowEdit="rowEdit"
       @rowDel="rowDel"
     > 

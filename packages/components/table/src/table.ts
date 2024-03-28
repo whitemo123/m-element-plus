@@ -167,6 +167,10 @@ export interface ITableOption {
    */
   showSummary?: boolean;
   /**
+   * @description 表格高度调节(px)
+   */
+  calcHeight?: number;
+  /**
    * @description 表格配置项
    */
   column: ITableOptionColumn[];
@@ -183,6 +187,18 @@ export const tableProps = buildProps({
   total: {
     type: Number,
     default: 0
+  },
+  /**
+   * @description 表格高度
+   */
+  height: {
+    type: [String, Number]
+  },
+  /**
+   * @description 最大高度
+   */
+  maxHeight: {
+    type: [String, Number]
   },
   /**
    * @description 表格数据

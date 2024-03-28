@@ -5,6 +5,7 @@ import { IFormOption, IFormOptionColumn, formProps } from './form';
 import { isEmpty } from '@m-element-plus/utils';
 import { FormInstance } from 'element-plus';
 import { IDictValue } from '@m-element-plus/components/common/types';
+import { useGlobalConfig } from '@m-element-plus/components/config-provider';
 
 defineOptions({
   name: "MForm"
@@ -20,6 +21,9 @@ const defaultOption: IFormOption = {
 
 // props
 const props = defineProps(formProps)
+
+// 全局配置
+const globalConfig = useGlobalConfig()
 
 // 表单ref
 const formRef = ref<FormInstance>()
@@ -67,6 +71,46 @@ const setFormValueByColumn = (column: IFormOptionColumn[]) => {
   }
 }
 
+
+/**
+ * @description 更新远程字典
+ * @param column 配置
+ * @param index 索引
+ */
+ const updateRemoteDic = async (column: IFormOptionColumn, index: number) => {
+  if (!globalConfig.value.httpGet) {
+    console.error(`请配置全局属性httpGet!!!`)
+    return
+  }
+  if (!column.dicFormatter) {
+    console.error(`请设置"${column.prop}"配置的dicFormatter!!!`)
+    return
+  }
+
+  let isSetting = false
+
+  try {
+    // 字典接口请求
+    const dicRes = await globalConfig.value.httpGet(column.dicUrl)
+    if (dicRes) {
+      const { list, label, value } = column.dicFormatter(dicRes)
+      if (list && (list instanceof Array)) {
+        formOption.value.column[index - 1]['dicData'] = list.map(item => {
+          return {
+            label: item[label],
+            value: item[value]
+          }
+        })
+        isSetting = true
+      }
+    }
+  } catch (err) {
+  }
+  if (!isSetting) {
+    formOption.value.column[index - 1]['dicData'] = []
+  }
+}
+
 /**
  * @description 获取配置列
  */
@@ -74,14 +118,24 @@ const getFormColumns = (arr: IFormOptionColumn[]) => {
   const result: IFormOptionColumn[] = []
   const columns = arr || []
   for (let i = 0; i < columns.length; i++) {
-    if (props.permission[columns[i].prop] !== false || props.permission[columns[i].prop + 'Form'] === true) {
-      result.push({
-        ...columns[i],
+    const columnsItem = columns[i]
+
+    if (
+      props.permission[columnsItem.prop] !== false ||
+      props.permission[columnsItem.prop + 'Form'] === true
+    ) {
+      const resultItem: IFormOptionColumn = {
+        ...columnsItem,
         // 默认span6
-        span: columns[i].span || 12,
+        span: columnsItem.span || 12,
         // 开启关闭按钮
         clearable: true
-      })
+      }
+      result.push(resultItem)
+      if ((!columnsItem.dicData || !columnsItem.dicData.length) && columnsItem.dicUrl) {
+        // 远程字典
+        updateRemoteDic(resultItem, result.length)
+      }
     }
   }
   return result

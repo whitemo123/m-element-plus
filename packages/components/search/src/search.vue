@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { get, set } from 'lodash-es';
+import { useGlobalConfig } from '@m-element-plus/components/config-provider'
 import { ISearchOption, ISearchOptionColumn, searchEmits, searchProps } from './search';
 import { isEmpty } from '@m-element-plus/components/common/utils';
 import { FormInstance } from 'element-plus';
@@ -14,6 +15,9 @@ const props = defineProps(searchProps)
 
 // emits
 const emits = defineEmits(searchEmits)
+
+// 获取全局配置
+const globalConfig = useGlobalConfig()
 
 // 搜索ref
 const searchRef = ref<FormInstance>()
@@ -56,6 +60,42 @@ const searchOption = ref<ISearchOption>({
 })
 
 /**
+ * @description 更新远程字典
+ * @param column 配置
+ * @param index 索引
+ */
+const updateRemoteDic = (column: ISearchOptionColumn, index: number) => {
+  if (!globalConfig.value.httpGet) {
+    console.error(`请配置全局属性httpGet!!!`)
+    return
+  }
+  if (!column.dicFormatter) {
+    console.error(`请设置"${column.prop}"配置的dicFormatter!!!`)
+    return
+  }
+  // 字典接口请求
+  globalConfig.value.httpGet(column.dicUrl).then(e => {
+    if (e && column.dicFormatter) {
+      const { list, label, value } = column.dicFormatter(e)
+      if (!list || !(list instanceof Array)) {
+        searchOption.value.column[index - 1]['dicData'] = []
+      } else {
+        searchOption.value.column[index - 1]['dicData'] = list.map(item => {
+          return {
+            label: item[label],
+            value: item[value]
+          }
+        })
+      }
+    } else {
+      searchOption.value.column[index - 1]['dicData'] = []
+    }
+  }).catch(() => {
+    searchOption.value.column[index - 1]['dicData'] = []
+  })
+}
+
+/**
  * @description 获取搜索列
  * @param { ISearchOptionColumn[] } arr 搜索列
  */
@@ -63,14 +103,23 @@ const getSearchColumns = (arr: ISearchOptionColumn[]) => {
   const result: ISearchOptionColumn[] = []
   const columns = arr || []
   for (let i = 0; i < columns.length; i++) {
-    if (props.permission[columns[i].prop] !== false || props.permission[columns[i].prop + 'Search'] === true) {
-      result.push({
-        ...columns[i],
+    const columnsItem = columns[i]
+    if (
+      props.permission[columnsItem.prop] !== false ||
+      props.permission[columnsItem.prop + 'Search'] === true
+    ) {
+      const resultItem: ISearchOptionColumn = {
+        ...columnsItem,
         // 默认span6
-        span: columns[i].span || 6,
+        span: columnsItem.span || 6,
         // 开启关闭按钮
         clearable: true
-      })
+      }
+      result.push(resultItem)
+      if ((!columnsItem.dicData || !columnsItem.dicData.length) && columnsItem.dicUrl) {
+        // 远程字典
+        updateRemoteDic(resultItem, result.length)
+      }
     }
   }
   return result
@@ -84,7 +133,12 @@ const setFormByColumn = (column: ISearchOptionColumn[]) => {
     const columnItem = column[i]
     if (isEmpty(proxys[columnItem.prop])) {
       // 日期范围，下拉框多选数据为数组
-      if (columnItem.type === 'datetimerange' || columnItem.type === 'monthrange' || (columnItem.type === 'select' && columnItem.multiple)) {
+      if (
+        columnItem.type === 'datetimerange' ||
+        columnItem.type === 'monthrange' ||
+        (columnItem.type === 'select' && columnItem.multiple) ||
+        columnItem.type === 'checkbox'
+      ) {
         proxys[columnItem.prop] = isEmpty(columnItem.value) ? [] : columnItem.value
       } else {
         // 其他类型全部传空字符

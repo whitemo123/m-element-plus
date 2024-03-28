@@ -7,6 +7,7 @@ import { MCrud } from '@m-element-plus/components/crud'
 import { MPagination } from '@m-element-plus/components/pagination'
 import { MSearch } from '@m-element-plus/components/search'
 import { MForm } from '@m-element-plus/components/form'
+import { MConfigProvider } from '@m-element-plus/components/config-provider'
 
 import type { Plugin } from 'vue'
 
@@ -19,5 +20,6 @@ export default [
   MCrud,
   MPagination,
   MSearch,
-  MForm
+  MForm,
+  MConfigProvider
 ] as Plugin[]
