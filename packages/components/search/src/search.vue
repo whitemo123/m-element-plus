@@ -122,7 +122,7 @@ const getSearchColumns = (arr: ISearchOptionColumn[]) => {
       }
     }
   }
-  return result
+  return result.sort((a, b) => (b.order || 0) - (a.order || 0))
 }
 
 /**

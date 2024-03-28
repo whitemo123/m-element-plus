@@ -168,7 +168,7 @@ const getTableColumns = (arr: ITableOptionColumn[]) => {
     }
   }
 
-  return result
+  return result.sort((a, b) => (b.order || 0) - (a.order || 0))
 }
 
 /**
@@ -289,6 +289,13 @@ const setDefaultCheckData = () => {
   }
 }
 
+/**
+ * @description 清空列表单选
+ */
+const clearRadioCheck = () => {
+  currentRadio.value = ''
+}
+
 onMounted(() => {
   // 设置默认选择数据
   setDefaultCheckData()
@@ -303,10 +310,9 @@ watch(() => props.option as ITableOption, (newVal: ITableOption) => {
 })
 
 defineExpose({
-  refreshTable
+  refreshTable,
+  clearRadioCheck
 })
-
-// TODO: 单选模式列表刷新未清除
 </script>
 
 <template>

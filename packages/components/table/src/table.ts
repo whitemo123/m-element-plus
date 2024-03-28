@@ -25,6 +25,10 @@ export interface ITableDefaultSort {
  */
 export interface ITableOptionColumn extends ICommonColumn {
   /**
+   * @description 搜索排序
+   */
+  order?: number;
+  /**
    * @description 列宽度
    */
   width?: number;

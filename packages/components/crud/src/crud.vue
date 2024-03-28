@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, useSlots, nextTick } from 'vue'
 
+import { isEmpty } from '../../common/utils'
 import { useGlobalConfig } from '@m-element-plus/components/config-provider'
 import MPagination from '@m-element-plus/components/pagination'
 import MTable from '@m-element-plus/components/table'
@@ -114,10 +115,10 @@ const dialogTitle = computed(() => {
   const column: ISearchOptionColumn[] = []
 
   for (let i = 0; i < crudOption.value.column.length; i++) {
-    const columnItem: ICrudOptionColumn = crudOption.value.column[i]
+    const columnItem: ICrudOptionColumn = cloneDeep(crudOption.value.column[i])
     // 是否开启搜素
     if (columnItem.search) {
-      column.push({
+      const resultColumn: ISearchOptionColumn = {
         ...columnItem,
         // 插槽
         slot: columnItem.searchSlot,
@@ -129,7 +130,13 @@ const dialogTitle = computed(() => {
         maxlength: columnItem.searchMaxLength,
         // 搜索输入框占位符
         placeholder: columnItem.searchPlaceholder,
-      })
+      }
+      delete resultColumn.order
+      // 排序字段不为空
+      if (!isEmpty(resultColumn.searchOrder)) {
+        resultColumn.order = resultColumn.searchOrder
+      }
+      column.push(resultColumn)
     }
   }
 
@@ -180,6 +187,13 @@ const formOption = computed<IFormOption>(() => {
   for (let i = 0; i < crudOption.value.column.length; i++) {
     const columnItem: ICrudOptionColumn = cloneDeep(crudOption.value.column[i])
     delete columnItem.slot
+    // 清空排序
+    delete columnItem.order
+
+    if (!isEmpty(columnItem.formOrder)) {
+      columnItem.order = columnItem.formOrder
+    }
+
     if (dialogType.value === 'add') {
       // 新增
       if (!columnItem.addHide) {
@@ -301,6 +315,7 @@ const pageSizeChange = (pageSize: number) => {
  * @param done 完成回调
  */
 const handleSearch = (form: any) => {
+  mTableRef.value?.clearRadioCheck()
   emits('search', form)
 }
 
@@ -308,6 +323,7 @@ const handleSearch = (form: any) => {
  * @description 重置搜索
  */
 const handleReset = () => {
+  mTableRef.value?.clearRadioCheck()
   emits('reset')
 }
 
@@ -414,10 +430,10 @@ const rowDel = (row: any, index: number) => {
     // 分页对象
     const pageStyle: any = document.querySelector('.m-pagination-box')
     // 额外可控制高度参数
-    const calcHeight: number = props.option?.calcHeight || globalConfig.value.calcHeight || 0
+    const calcHeight: number = props.option?.calcHeight || globalConfig.value?.calcHeight || 0
 
     // 表格高度设置
-    tableHeight.value = document.documentElement.clientHeight - tableStyle.offsetTop - pageStyle.offsetHeight - calcHeight;
+    tableHeight.value = document.documentElement.clientHeight - tableStyle.offsetTop - (pageStyle?.offsetHeight || 0) - calcHeight;
   })
 }
 

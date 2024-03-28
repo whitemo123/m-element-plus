@@ -76,7 +76,9 @@ const option = ref<ICrudOption>({
           label: "女",
           value: 2
         }
-      ]
+      ],
+      order: 1,
+      searchOrder: 1
     }
   ]
 })

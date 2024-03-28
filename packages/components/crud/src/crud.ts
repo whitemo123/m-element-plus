@@ -23,6 +23,14 @@ export interface ICrudDefaultSort extends ITableDefaultSort {}
  */
 export interface ICrudOptionColumn extends ITableOptionColumn, ISearchOptionColumn {
   /**
+   * @description 搜索排序
+   */
+  searchOrder?: number;
+  /**
+   * @description 表单排序
+   */
+  formOrder?: number;
+  /**
    * @description 是否开启搜索
    */
   search?: boolean;
