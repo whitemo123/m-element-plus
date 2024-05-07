@@ -47,6 +47,12 @@ const formDialog = ref(false)
 // 表单ref
 const crudFormRef = ref<FormInstance>()
 
+// 备份modelForm
+const _modelForm = ref<any>()
+
+// 备份列表index
+const _rowIndex = ref(-1)
+
 /**
  * @description crud配置
  */
@@ -344,14 +350,20 @@ const dialogEnter = async (done: Function, loading: Function) => {
     return
   }
 
-  emits("rowSave", modelForm.value, done, loading)
+  if (dialogType.value === 'add') {
+    // 新增
+    emits("rowSave", modelForm.value, done, loading)
+  } else if (dialogType.value === 'edit') {
+    // 修改
+    emits("rowEdit", modelForm.value, done, loading)
+  }
 }
 
 /**
  * @description 新增/修改弹窗取消
  */
 const dialogCancel = () => {
-
+  emits("rowCancel", _modelForm.value, _rowIndex.value, dialogType.value)
 }
 
 
@@ -359,6 +371,10 @@ const dialogCancel = () => {
  * @description 弹窗关闭
  */
 const dialogClose = () => {
+  // 清空备份
+  _modelForm.value = null
+  _rowIndex.value = -1
+
   if (crudFormRef.value) {
     crudFormRef.value.clear()
   } else {
@@ -380,6 +396,10 @@ const rowAdd = () => {
  * @description 打开编辑修改
  */
 const rowEdit = (row: any, index: number) => {
+  // 备份数据
+  _modelForm.value = cloneDeep(row)
+  _rowIndex.value = index
+
   // 弹窗类型
   dialogType.value = 'edit'
   for (const key in row) {
@@ -393,6 +413,10 @@ const rowEdit = (row: any, index: number) => {
  * @description 打开详情
  */
 const rowView = (row: any, index: number) => {
+  // 备份数据
+  _modelForm.value = cloneDeep(row)
+  _rowIndex.value = index
+
   // 弹窗类型
   dialogType.value = 'view'
   for (const key in row) {

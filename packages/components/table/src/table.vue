@@ -402,7 +402,7 @@ defineExpose({
             </el-link>
             <el-link
               class="m-control-btns"
-              type="primary"
+              type="danger"
               :underline="false"
               v-if="tableOption.delBtn"
               :icon="tableOption.delBtnIcon"

@@ -1,4 +1,4 @@
-import { buildProps, definePropType, isNumber } from "@m-element-plus/utils";
+import { buildProps, definePropType, isNumber, isFunction } from "@m-element-plus/utils";
 import { useSizeProp } from '@m-element-plus/hooks'
 
 import type { ITableDefaultSort, ITableOption, ITableOptionColumn } from "@m-element-plus/components/table";
@@ -241,7 +241,15 @@ export const crudEmits = {
    * @param loading 加载关闭回调
    * @returns 
    */
-  rowSave: (form: any, done: Function, loading: Function) => true,
+  rowSave: (form: any, done: Function, loading: Function) => isFunction(done) && isFunction(loading),
+  /**
+   * @description 修改事件
+   * @param form 表单内容
+   * @param done 完成回调
+   * @param loading 加载关闭回调
+   * @returns 
+   */
+  rowEdit: (form: any, done: Function, loading: Function) => isFunction(done) && isFunction(loading),
   /**
    * @description 删除事件
    * @param row 行数据
@@ -249,4 +257,12 @@ export const crudEmits = {
    * @returns 
    */
   rowDel: (row: any, index: number) => true,
+  /**
+   * @description 表单取消
+   * @param row 行数据
+   * @param index 索引
+   * @param type 类型
+   * @returns 
+   */
+  rowCancel: (row: any, index: number, type: 'add' | 'edit' | 'view') => true
 }
