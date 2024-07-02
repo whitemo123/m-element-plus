@@ -447,23 +447,28 @@ const rowDel = (row: any, index: number) => {
 /**
  * @description 获取表格高度
  */
- const getTableHeight = () => {
+ const setTableHeight = () => {
   nextTick(() => {
-    // 表格style对象
-    const tableStyle = mTableRef.value?.$el;
-    // 分页对象
-    const pageStyle: any = document.querySelector('.m-pagination-box')
-    // 额外可控制高度参数
-    const calcHeight: number = props.option?.calcHeight || globalConfig.value?.calcHeight || 0
-
-    // 表格高度设置
-    tableHeight.value = document.documentElement.clientHeight - tableStyle.offsetTop - (pageStyle?.offsetHeight || 0) - calcHeight;
+    // 自动高度
+    if (crudOption.value.height === 'auto') {
+      // 表格style对象
+      const tableStyle = mTableRef.value?.$el;
+      // 分页对象
+      const pageStyle: any = document.querySelector('.m-pagination-box')
+      // 额外可控制高度参数
+      const calcHeight: number = props.option?.calcHeight || globalConfig.value?.calcHeight || 0
+      tableHeight.value = document.documentElement.clientHeight - tableStyle.offsetTop - (pageStyle?.offsetHeight || 0) - calcHeight;
+    } else {
+      tableHeight.value = crudOption.value.height;
+    }
   })
 }
 
 onMounted(() => {
-  // 获取表格高度
-  getTableHeight()
+  // 设置表格高度
+  if (crudOption.value.height) {
+    setTableHeight()
+  }
 })
 
 defineExpose({

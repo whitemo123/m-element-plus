@@ -121,6 +121,14 @@ export interface ICrudOption extends ITableOption, ISearchOption {
    */
   dialogWidth?: string;
   /**
+   * @description 表格高度
+   */
+  height?: string;
+  /**
+   * @description 表格最大高度
+   */
+  maxHeight?: string;
+  /**
    * @description crud列配置
    */
   column: ICrudOptionColumn[]
