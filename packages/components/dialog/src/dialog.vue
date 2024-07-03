@@ -85,6 +85,7 @@ const onBeforeClose = (done: Function) => {
 
 <template>
   <el-dialog
+    class="m-dialog"
     :model-value="modelValue"
     :title="title"
     :width="width"
